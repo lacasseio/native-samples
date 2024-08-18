@@ -6,7 +6,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.samples.plugins.generators.CleanSamplesTask;
 import org.gradle.samples.plugins.generators.SamplesManifestTask;
 import org.gradle.samples.plugins.generators.SamplesManifestTaskEx;
 import org.gradle.samples.plugins.tasks.NewSampleTask;
@@ -16,7 +15,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import static org.gradle.samples.plugins.util.TransformEachTransformer.transformEach;
 
