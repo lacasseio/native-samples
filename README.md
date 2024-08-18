@@ -13,6 +13,8 @@ Each Swift sample works on macOS and Linux, with Swift 3 and later.
 
 ## Getting Started
 
+### Init script
+
 First copy the init script to your user home.
 Because of limitation in Gradle, we have to consume sample project as external builds (homologue to included builds).
 To ensure correctness, we need to inject additional configuration which we do via the init script.
@@ -20,6 +22,14 @@ To ensure correctness, we need to inject additional configuration which we do vi
 ```
 > cp sample.init.gradle ~/.gradle/init.d/
 ```
+
+### Import in IntelliJ
+
+Importing external builds in IntelliJ is a bit problematic.
+First, build the plugins: `./gradlew help`
+Then, import into IntelliJ.
+You may have some error while importing, just `Reload All Gradle Projects` until everything is green.
+During development, prefer reloading each project individually (right-click `Reload Gradle Project`).
 
 ## Deeper build insights with Build Scans
 
