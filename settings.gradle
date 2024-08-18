@@ -12,6 +12,7 @@ pluginManagement {
 
 plugins {
     id 'dev.nokee.samples'
+    id 'com.gradle.develocity' version '3.17.6'
 }
 
 includeBuild 'samples-dev/src/templates/build-wrapper-plugin'
@@ -19,6 +20,14 @@ includeBuild 'samples-dev/src/templates/custom-publication-plugin'
 includeBuild 'samples-dev/src/templates/release-plugin'
 
 include 'samples-dev'
+
+develocity {
+    buildScan {
+        termsOfUseUrl = 'https://gradle.com/help/legal-terms-of-use'
+        termsOfUseAgree = 'yes' // TODO: should not commit this
+        publishing.onlyIf { true }
+    }
+}
 
 gradle.allprojects {
     repositories {
