@@ -1,5 +1,6 @@
 package dev.nokee.samples.externalbuilds.internal;
 
+import dev.nokee.samples.externalbuilds.internal.model.BuildModules;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -27,8 +28,6 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import static dev.nokee.samples.externalbuilds.internal.PeekTransformer.peek;
 
 /*private*/ abstract /*final*/ class IdeaLinkedExternalGradleProjectRule implements Plugin<Project> {
     private final ProviderFactory providers;

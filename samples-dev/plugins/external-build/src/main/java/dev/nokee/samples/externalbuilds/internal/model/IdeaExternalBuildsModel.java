@@ -1,7 +1,7 @@
-package dev.nokee.samples.externalbuilds.internal;
+package dev.nokee.samples.externalbuilds.internal.model;
 
 import dev.nokee.samples.externalbuilds.ExternalBuild;
-import dev.nokee.samples.externalbuilds.ExternalBuilds;
+import dev.nokee.samples.externalbuilds.internal.ExternalBuildsInternal;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Transformer;
@@ -14,7 +14,6 @@ import org.gradle.tooling.provider.model.ToolingModelBuilderRegistry;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.Serializable;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;

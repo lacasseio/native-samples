@@ -1,4 +1,4 @@
-package dev.nokee.samples.externalbuilds.internal;
+package dev.nokee.samples.externalbuilds.internal.model;
 
 import java.nio.file.Path;
 
