@@ -27,7 +27,7 @@ import static org.gradle.samples.plugins.util.TransformEachTransformer.transform
             ExternalBuildManagement externalBuildManagement = settings.getExtensions().getByType(ExternalBuildManagement.class);
             for (Sample sample : settings.getExtensions().getByType(SamplesExtensionInternal.class)) {
                 externalBuildManagement.externalBuild(sample.getLocation(), it -> {
-                    it.getName().set(it.getName());
+                    it.getName().set(sample.getName());
                 });
             }
         });
