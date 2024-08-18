@@ -107,7 +107,7 @@ class Documentation {
                             }
                         }
                     }
-                    if (node instanceof Heading && node.level <= 3) {
+                    if (node instanceof Heading && node.level <= 1) {
                         break
                     }
                     node = node.next
