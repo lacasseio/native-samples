@@ -1,4 +1,4 @@
-## Application with dependency on upstream branch (dependency-on-upstream-branch)
+# Application with dependency on upstream branch (dependency-on-upstream-branch)
 
 This sample shows how a source dependency on a particular branch can be used.
 

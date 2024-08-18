@@ -1,4 +1,4 @@
-## Application with Swift package manager conventions (swift-package-manager)
+# Application with Swift package manager conventions (swift-package-manager)
 
 This sample shows how to configure Gradle to use a source layout that is different to its conventions. In this case, the sample uses the typical layout for a Swift Package Manager package.
 It contains an application and a single library. The source files for the application and libraries are all under a single `Sources` directory.

@@ -1,4 +1,4 @@
-## Application with prebuilt library dependencies (prebuilt-binaries)
+# Application with prebuilt library dependencies (prebuilt-binaries)
 
 This sample shows how to use pre-built binaries that are already available on the local machine. Currently, Gradle does not offer a convenient way to do this but it is possible to configure Gradle to use these binaries.
 

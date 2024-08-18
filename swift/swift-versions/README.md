@@ -1,4 +1,4 @@
-## Supporting multiple Swift versions (swift-versions)
+# Supporting multiple Swift versions (swift-versions)
 
 This sample demonstrates using multiple versions of Swift in a single build. There are two projects that build identical applications. One is written in Swift 3 compatible code (`swift3-app`) and one is written with Swift 4 compatible code (`swift4-app`). When running the application, it will print a message about which version of Swift was used.
 

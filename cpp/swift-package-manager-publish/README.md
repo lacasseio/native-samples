@@ -1,4 +1,4 @@
-## Using Gradle builds from Swift Package Manager (swift-package-manager-publish)
+# Using Gradle builds from Swift Package Manager (swift-package-manager-publish)
 
 This sample shows how libraries built with Gradle can be used by projects that are built with Swift Package Manager, without having to maintain separate Gradle and Swift PM build for the library.
 

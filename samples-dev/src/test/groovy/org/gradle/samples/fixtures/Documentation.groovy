@@ -59,7 +59,7 @@ class Documentation {
 
         @Override
         void visit(Heading heading) {
-            if (heading.level != 2) {
+            if (heading.level != 1) {
                 return
             }
             String text = getText(heading)

@@ -1,3 +1,5 @@
+# Simple application (application)
+
 This sample shows how a simple Swift application can be built with Gradle.
 The application has no dependencies and the build has minimal configuration.
 

@@ -1,4 +1,4 @@
-## Application and libraries built by CMake (cmake-source-dependencies)
+# Application and libraries built by CMake (cmake-source-dependencies)
 
 This sample demonstrates using Gradle's dependency management features to coordinate building an application and libraries built by CMake. The sample is composed of an application and two libraries. Each of these is hosted in a separate Git repository and connected together using source dependencies.
 

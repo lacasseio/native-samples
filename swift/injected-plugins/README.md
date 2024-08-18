@@ -1,4 +1,4 @@
-## Application uses libraries that are not built by Gradle (injected-plugins)
+# Application uses libraries that are not built by Gradle (injected-plugins)
 
 Gradle can also consume source dependencies that come from repositories without Gradle builds. When declaring a source dependency's repository information, you can instruct Gradle to inject plugins into the source dependency. These plugins can configure a Gradle build based on the contents of the repository.
 

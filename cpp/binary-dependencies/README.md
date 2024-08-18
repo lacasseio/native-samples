@@ -1,4 +1,4 @@
-## Application with prebuilt library dependencies in a Maven repository (binary-dependencies)
+# Application with prebuilt library dependencies in a Maven repository (binary-dependencies)
 
 This sample shows how to publish C++ libraries to a Maven repository and use them from another build. This is currently not supported for Swift.
 

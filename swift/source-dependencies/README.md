@@ -1,4 +1,4 @@
-## Application with source library dependencies (source-dependencies)
+# Application with source library dependencies (source-dependencies)
 
 This sample demonstrates using external source dependencies to build Swift and C++ applications that require two libraries. The source for the libraries are hosted in separate Git repositories and declared as 'source dependencies' of the application. When Gradle builds the application, it first checks out a revision of the library source and uses this to build the binaries for the library.
 

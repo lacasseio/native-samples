@@ -1,4 +1,4 @@
-## iOS Application (ios-application)
+# iOS Application (ios-application)
 
 This sample demonstrates a iOS 11.2 application build for the iPhone simulator, allowing editing of the iOS specific files inside Xcode.
 
