@@ -225,7 +225,18 @@ public class SourceCopyTask extends DefaultTask implements SampleGeneratorTask {
          * Returns the relative path from the sample dir to the root of the samples source tree.
          */
         public String relativePathTo(String targetDirName) {
-            return getSampleDir().dir(targetDirName).get().getAsFile().toPath().relativize(getProject().getProjectDir().getParentFile().toPath()).toString();
+            return getSampleDir().dir(targetDirName).get().getAsFile().toPath().relativize(parentDir().toPath()).toString();
+        }
+
+        private File parentDir() {
+            File dir = getProject().getProjectDir();
+            while (dir != null) {
+                if (new File(dir, ".sampleroot").exists()) {
+                    return dir;
+                }
+                dir = dir.getParentFile();
+            }
+            return null;
         }
 
         public File getTemplateFile(String templateFileName) {
