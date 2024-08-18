@@ -8,6 +8,7 @@ import org.gradle.api.Task;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.samples.plugins.Sample;
 import org.gradle.samples.plugins.SampleGeneratorTask;
 import org.gradle.samples.plugins.Samples;
 
@@ -42,9 +43,9 @@ public class GeneratorPlugin implements Plugin<Project> {
                 }).collect(Collectors.toList());
             }));
         });
-
         TaskProvider<SamplesManifestTaskEx> manifestTask = project.getTasks().register("samplesManifest", SamplesManifestTaskEx.class, task -> {
-            Provider<List<org.gradle.samples.plugins.Sample>> samples = project.provider(() -> project.getRootProject().getExtensions().findByType(Samples.class)).flatMap(Samples::toProvider).orElse(Collections.emptyList());
+            // TODO: Convert to model
+            Provider<List<Sample>> samples = project.provider(() -> project.getRootProject().getExtensions().findByType(Samples.class)).flatMap(Samples::toProvider).orElse(Collections.emptyList());
             task.dependsOn((Callable<?>) () -> {
                 return samples.map(transformEach(it -> {
                     return project.getExtensions().getByType(ExternalBuilds.class).getByName(it.getName()).task(":samplesManifest");
