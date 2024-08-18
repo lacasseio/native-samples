@@ -1,0 +1,15 @@
+rootProject.name = 'plugins'
+
+include 'external-build'
+
+gradle.allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    pluginManager.withPlugin('java-base') {
+        java {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+}

@@ -1,3 +1,26 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        project(".").buildRoot()
+        appProject("app").fromTemplate("cpp-app")
+        appProject("app").fromTemplate(cppMessageLib)
+        appProject("app").fromTemplate("cpp-message-static")
+        libProject("utilities").fromTemplate(cppUtilsLib)
+        cmakeProject("list", "list").fromTemplate(cppListLib)
+        project("build-wrapper-plugin").buildRoot()
+        project("build-wrapper-plugin").fromTemplate("build-wrapper-plugin")
+        project("custom-publication-plugin").buildRoot()
+        project("custom-publication-plugin").fromTemplate("custom-publication-plugin")
+    }
+}
+
 rootProject.name = 'cmake'
 
 include ":app", ":utilities", ":list"

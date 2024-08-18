@@ -1,3 +1,22 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+
+        project(".").buildRoot()
+        appProject("app").fromTemplate("cpp-app-uses-logger")
+        appProject("app").fromTemplate("cpp-logger-uses-console")
+        appProject("app").fromTemplate(cppUtilsLib)
+        appProject("app").fromTemplate(cppListLib)
+        libProject("ansiConsole").fromTemplate(CppLibraryTemplate.of("cpp-ansi-console-lib", "ansi_console"))
+        libProject("winConsole").fromTemplate(CppLibraryTemplate.of("cpp-windows-console-lib", "win_console"))
+    }
+}
+
 rootProject.name = 'osDeps'
 
 include 'app', 'ansiConsole', 'winConsole'

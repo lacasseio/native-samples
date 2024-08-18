@@ -1,0 +1,20 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+group = 'org.gradle.samples'
+version = '1.0'
+
+gradlePlugin {
+    plugins {
+        customPublication {
+            id = 'org.gradle.samples.custom-publication'
+            implementationClass = 'org.gradle.samples.plugins.CustomPublicationPlugin'
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // strictly compile the sample plugins
+    options.compilerArgs.addAll("-Werror", "-Xlint:deprecation")
+}

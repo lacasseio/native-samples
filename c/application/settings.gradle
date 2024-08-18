@@ -1,1 +1,12 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        appProject(".").buildRoot()
+        appProject(".").fromTemplate("c-app")
+    }
+}
+
 rootProject.name = 'app'

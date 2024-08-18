@@ -1,3 +1,23 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        project(".").buildRoot()
+        appProject("app").fromTemplate("cpp-app")
+        appProject("app").fromTemplate(cppMessageLib)
+        appProject("app").fromTemplate("cpp-message-static")
+        appProject("app").fromTemplate("cpp-app-check-published-macros")
+        libProject("utilities").fromTemplate(cppUtilsLib)
+        libProject("list").fromTemplate(cppListLib)
+    }
+}
+
 include "app", "list", "utilities"
 
 // This is included for convenience. Usually this plugin would be published to a plugin repository instead

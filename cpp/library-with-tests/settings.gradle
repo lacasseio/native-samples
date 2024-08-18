@@ -1,3 +1,18 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+
+        libProject(".").buildRoot()
+        libProject(".").fromTemplate(cppListLib)
+        project("build-wrapper-plugin").buildRoot()
+        project("build-wrapper-plugin").fromTemplate("build-wrapper-plugin")
+    }
+}
+
 rootProject.name = "list"
 include("googletest")
 

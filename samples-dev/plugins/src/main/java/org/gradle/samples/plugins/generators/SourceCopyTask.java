@@ -6,6 +6,7 @@ import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Transformer;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.Cast;
 import org.gradle.samples.plugins.SampleGeneratorTask;
@@ -80,14 +81,17 @@ public class SourceCopyTask extends DefaultTask implements SampleGeneratorTask {
         return target;
     }
 
+    @Internal
     public DirectoryProperty getSampleDir() {
         return sampleDir;
     }
 
+    @Internal
     public DirectoryProperty getTemplatesDir() {
         return templatesDir;
     }
 
+    @Internal
     public Map<String, TemplateTarget> getProjects() {
         return projects;
     }

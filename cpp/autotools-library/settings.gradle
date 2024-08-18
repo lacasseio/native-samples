@@ -1,3 +1,24 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        appProject(".").buildRoot()
+        appProject("app").fromTemplate("cpp-app-with-curl")
+        appProject("app").fromTemplate(cppUtilsLib)
+        appProject("app").fromTemplate(cppListLib)
+        appProject("app").fromTemplate(cppMessageLib)
+        appProject("app").fromTemplate("cpp-message-static")
+        project("build-wrapper-plugin").buildRoot()
+        project("build-wrapper-plugin").fromTemplate("build-wrapper-plugin")
+    }
+}
+
 include ':app', ':curl'
 
 // This is included for convenience. Usually this plugin would be published to a plugin repository instead

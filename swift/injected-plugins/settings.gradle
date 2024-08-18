@@ -1,6 +1,41 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+import org.gradle.samples.plugins.generators.GitRepoTask
+sample {
+    copySource {
+        def swiftUtilsLib = SwiftLibraryTemplate.of("swift-lib-with-api-dep", "Utilities")
+
+        appProject(".").buildRoot()
+        appProject(".").fromTemplate("swift-app")
+        libProject("repos/utilities-library").fromTemplate(swiftUtilsLib)
+        libProject("repos/list-library").fromTemplate(SwiftLibraryTemplate.of("swift-lib-unusable", "List"))
+    }
+    gradle.rootProject {
+        task generateMinimalSwiftListRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("repos/list-library")
+            change { ch ->
+                tag("1.0")
+                message("initial version")
+            }
+        }
+
+        task generateMinimalSwiftUtilitiesRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("repos/utilities-library")
+            change { ch ->
+                tag("1.0")
+                message("initial version")
+            }
+        }
+    }
+}
+
 rootProject.name = 'app'
 
-includeBuild("plugins")
+includeBuild("plugins") { name = 'source-plugins' }
 
 sourceControl {
     gitRepository("repos/utilities-library") {

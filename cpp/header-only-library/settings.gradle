@@ -1,3 +1,14 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        libProject(".").buildRoot()
+        libProject(".").fromTemplate(CppLibraryTemplate.of("cpp-lib-header-only", "list"))
+    }
+}
+
 rootProject.name = "list-header"
 
 includeBuild "header-gradle-plugin"

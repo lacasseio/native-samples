@@ -7,8 +7,6 @@ import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.PublishableComponent;
-import org.gradle.api.internal.CollectionCallbackActionDecorator;
-import org.gradle.api.internal.artifacts.ArtifactAttributes;
 import org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.artifacts.transform.UnzipTransform;
@@ -28,10 +26,10 @@ import org.gradle.language.plugins.NativeBasePlugin;
 import org.gradle.nativeplatform.Linkage;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.gradle.api.artifacts.type.ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE;
 import static org.gradle.api.artifacts.type.ArtifactTypeDefinition.DIRECTORY_TYPE;
 import static org.gradle.api.artifacts.type.ArtifactTypeDefinition.ZIP_TYPE;
 import static org.gradle.language.cpp.CppBinary.LINKAGE_ATTRIBUTE;
@@ -106,7 +104,7 @@ public class WrappedNativeLibraryPlugin implements Plugin<Project> {
             it.setCanBeResolved(false);
             it.extendsFrom(implementation);
             it.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, cppApiUsage);
-            it.getAttributes().attribute(ArtifactAttributes.ARTIFACT_FORMAT, DIRECTORY_TYPE);
+            it.getAttributes().attribute(ARTIFACT_TYPE_ATTRIBUTE, DIRECTORY_TYPE);
         });
 
         // outgoing linktime libraries (i.e. static libraries) - this represents the libraries we expose (including transitive headers)
@@ -163,9 +161,9 @@ public class WrappedNativeLibraryPlugin implements Plugin<Project> {
         mainComponent.getMainPublication().addArtifact(new ArchivePublishArtifact(headersZip.get()));
 
         project.getDependencies().registerTransform(UnzipTransform.class, variantTransform -> {
-            variantTransform.getFrom().attribute(ArtifactAttributes.ARTIFACT_FORMAT, ZIP_TYPE);
+            variantTransform.getFrom().attribute(ARTIFACT_TYPE_ATTRIBUTE, ZIP_TYPE);
             variantTransform.getFrom().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.C_PLUS_PLUS_API));
-            variantTransform.getTo().attribute(ArtifactAttributes.ARTIFACT_FORMAT, DIRECTORY_TYPE);
+            variantTransform.getTo().attribute(ARTIFACT_TYPE_ATTRIBUTE, DIRECTORY_TYPE);
             variantTransform.getTo().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.C_PLUS_PLUS_API));
         });
 
@@ -181,7 +179,7 @@ public class WrappedNativeLibraryPlugin implements Plugin<Project> {
 
             AttributeContainer publicationAttributes = immutableAttributesFactory.mutable();
             publicationAttributes.attribute(Usage.USAGE_ATTRIBUTE, apiUsage);
-            publicationAttributes.attribute(ArtifactAttributes.ARTIFACT_FORMAT, ZIP_TYPE);
+            publicationAttributes.attribute(ARTIFACT_TYPE_ATTRIBUTE, ZIP_TYPE);
             this.mainVariant = new MainLibraryVariant("api", apiUsage, api, publicationAttributes, objectFactory);
         }
 

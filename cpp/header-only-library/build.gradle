@@ -1,5 +1,5 @@
 plugins {
-    id 'org.gradle.samples.cpp-header-library' version '1.0'
+    id 'org.gradle.samples.cpp-header-library'
     id 'xcode'
     id 'visual-studio'
     id 'maven-publish'

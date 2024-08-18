@@ -1,3 +1,24 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def swiftUtilsLib = SwiftLibraryTemplate.of("swift-lib-with-api-dep", "Utilities")
+        def swiftListLib = SwiftLibraryTemplate.of("swift-lib", "List")
+
+        project(".").buildRoot()
+        appProject("app").fromTemplate("swift-app")
+        appProject("app").fromTemplate("swift-app-uses-logger")
+        appProject("app").fromTemplate("swift-logger-uses-console")
+        appProject("app").fromTemplate(swiftUtilsLib)
+        appProject("app").fromTemplate(swiftListLib)
+
+        libProject("linux-console").fromTemplate(SwiftLibraryTemplate.of("swift-linux-console-lib", "LinuxLogger"))
+        libProject("macos-console").fromTemplate(SwiftLibraryTemplate.of("swift-macos-console-lib", "MacOsLogger"))
+    }
+}
+
 rootProject.name = 'osDeps'
 
 include 'app', 'linux-console', 'macos-console'

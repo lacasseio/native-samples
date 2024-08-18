@@ -1,0 +1,54 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+import org.gradle.samples.plugins.generators.GitRepoTask
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        appProject("app").buildRoot()
+        appProject("app").fromTemplate("cpp-app")
+        appProject("app").fromTemplate(cppMessageLib)
+        appProject("app").fromTemplate("cpp-message-static")
+        libProject("utilities-library").buildRoot()
+        libProject("utilities-library").fromTemplate(cppUtilsLib)
+        libProject("utilities-library").fromTemplate("cpp-utilities-lib-build")
+        libProject("list-library").buildRoot()
+        libProject("list-library").fromTemplate(cppListLib)
+        libProject("list-library").fromTemplate("cpp-list-lib-build")
+    }
+    gradle.rootProject {
+        task generateBranchCppListRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("list-library")
+            change { ch ->
+                tag("1.0")
+                message("initial version")
+            }
+        }
+
+        task generateBranchCppUtilitiesRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("utilities-library")
+            change { ch ->
+                changeContent("src/main/cpp/join.cpp", 'for (int i = 0; i < source.size(); ++i) {', """// BUG: i = 1 should be i = 0
+            for (int i = 1; i < source.size(); ++i) {""")
+                tag("1.0")
+                message("initial version")
+            }
+            change { ch ->
+                branch("release")
+                changeContent("build.gradle", "version = '1.0'", "version = '1.1'")
+                message("branch for release")
+            }
+            change { ch ->
+                checkout("master")
+                changeContent("build.gradle", "version = '1.0'", "version = '2.0-SNAPSHOT'")
+                message("prepare next version")
+            }
+        }
+    }
+}

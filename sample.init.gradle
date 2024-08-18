@@ -1,0 +1,23 @@
+gradle.addBuildListener(new BuildAdapter() {
+	void beforeSettings(Settings settings) {
+		if (!settings.buildscript.sourceFile.exists()) {
+			return;
+		}
+		if (settings.buildscript.sourceFile.text.contains('dev.nokee.sample')) {
+			def dir = settings.settingsDir
+			while (dir != null) {
+				if (new File(dir, '.sampleroot').exists()) {
+					def docsPluginsLocation = new File(dir, 'samples-dev/plugins')
+					if (docsPluginsLocation.exists()) {
+						settings.pluginManagement {
+							includeBuild(settings.settingsDir.toPath().relativize(docsPluginsLocation.toPath()).toString())
+						}
+					}
+					return;
+				}
+				dir = dir.parentFile
+			}
+		}
+	}
+})
+

@@ -1,2 +1,11 @@
-rootProject.name = 'app'
+plugins {
+    id 'dev.nokee.sample'
+}
 
+sample {
+    copySource {
+        project(".").buildRoot()
+    }
+}
+
+rootProject.name = 'app'

@@ -4,9 +4,12 @@ import org.gradle.internal.os.OperatingSystem
 import org.gradle.samples.fixtures.NativeSample
 import org.gradle.samples.fixtures.Samples
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Assume
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static org.gradle.samples.fixtures.Samples.withArgs
+import static org.junit.jupiter.api.Assumptions.assumeFalse
+import static org.junit.jupiter.api.Assumptions.assumeTrue
 
 abstract class ExecuteSamplesIntegrationTest extends Specification {
 
@@ -18,7 +21,7 @@ abstract class ExecuteSamplesIntegrationTest extends Specification {
                 println "Running setup step " + command + " in " + docs.workingDir
                 GradleRunner.create()
                         .withProjectDir(sample.workingDir)
-                        .withArguments((command.split().drop(1) as List) + ["-S"])
+                        .withArguments(withArgs(*((command.split().drop(1) as List) + ["-S"])))
                         .build()
             }
         }
@@ -54,14 +57,14 @@ abstract class ExecuteSamplesIntegrationTest extends Specification {
     @Unroll
     def "can run help for '#sample.name' without running any setup steps"() {
         // TODO - remove this when instruction parsing is smarter
-        Assume.assumeTrue(sample.sampleName != 'swift-package-manager-publish')
-        Assume.assumeTrue(sample.sampleName != 'cmake-library')
-        Assume.assumeTrue(sample.sampleName != 'cmake-source-dependencies')
-        Assume.assumeTrue(sample.sampleName != 'autotools-library')
-        Assume.assumeTrue(sample.sampleName != 'library-with-tests')
+        assumeTrue(sample.sampleName != 'swift-package-manager-publish')
+        assumeTrue(sample.sampleName != 'cmake-library')
+        assumeTrue(sample.sampleName != 'cmake-source-dependencies')
+        assumeTrue(sample.sampleName != 'autotools-library')
+        assumeTrue(sample.sampleName != 'library-with-tests')
         // Tool chains can only be provision on Linux for Swift and Linux and macOS for C++
-        Assume.assumeFalse(sample.languageName == 'swift' && sample.sampleName == 'provisionable-tool-chains' && OperatingSystem.current().macOsX)
-        Assume.assumeFalse(sample.sampleName == 'provisionable-tool-chains' && OperatingSystem.current().windows)
+        assumeFalse(sample.languageName == 'swift' && sample.sampleName == 'provisionable-tool-chains' && OperatingSystem.current().macOsX)
+        assumeFalse(sample.sampleName == 'provisionable-tool-chains' && OperatingSystem.current().windows)
 
         given:
         sample.clean()
@@ -73,7 +76,7 @@ abstract class ExecuteSamplesIntegrationTest extends Specification {
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
-                .withArguments("help")
+                .withArguments(withArgs("help"))
                 .build()
 
         where:

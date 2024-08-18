@@ -1,3 +1,22 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        appProject(".").buildRoot()
+        appProject(".").fromTemplate("cpp-app")
+        appProject(".").fromTemplate(cppMessageLib)
+        appProject(".").fromTemplate("cpp-message-static")
+        libProject("utilities-library").fromTemplate(cppUtilsLib)
+        libProject("list-library").fromTemplate(cppListLib)
+    }
+}
+
 rootProject.name = 'app'
 
 includeBuild 'list-library'

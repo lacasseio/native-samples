@@ -1,0 +1,20 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+gradlePlugin {
+    plugins {
+        externalBuild {
+            id = 'dev.nokee.samples.external-build-management'
+            implementationClass = 'dev.nokee.samples.externalbuilds.plugins.ExternalBuildManagementPlugin'
+        }
+        idea {
+            id = 'dev.nokee.samples.external-build-models'
+            implementationClass = 'dev.nokee.samples.externalbuilds.plugins.ExternalBuildModelPlugin'
+        }
+    }
+
+    dependencies {
+        implementation 'com.google.guava:guava:27.1-jre'
+    }
+}

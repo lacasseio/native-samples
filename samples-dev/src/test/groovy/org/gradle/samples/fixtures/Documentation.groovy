@@ -20,10 +20,10 @@ import java.util.regex.Pattern
  *
  */
 class Documentation {
-    private final Map<String, SampleDocumentation> samples
+    private final Map<String, SampleDocumentation> samples = new HashMap<>()
 
     Documentation(File documentationFile) {
-        samples = loadSamples(documentationFile)
+//        samples = loadSamples(documentationFile)
     }
 
     Documentation() {
@@ -31,22 +31,31 @@ class Documentation {
     }
 
     SampleDocumentation getSample(String name) {
-        if (!samples.keySet().contains(name)) {
-            throw new AssertionError("Could not find documentation for sample '${name}'")
-        }
-        return samples.get(name)
+        println('wat ' + name)
+        return samples.computeIfAbsent(name, path -> {
+            println(new File(Samples.rootSampleDir, path))
+            return loadSample(new File(new File(Samples.rootSampleDir, path), "README.md"));
+        })
     }
 
-    private static Map<String, SampleDocumentation> loadSamples(File readme) {
+//    private static Map<String, SampleDocumentation> loadSamples(File readme) {
+//        def parser = Parser.builder().build()
+//        def root = parser.parse(readme.text)
+//        def visitor = new HeadingVisitor()
+//        root.accept(visitor)
+//        return visitor.samples
+//    }
+
+    private static SampleDocumentation loadSample(File readme) {
         def parser = Parser.builder().build()
         def root = parser.parse(readme.text)
         def visitor = new HeadingVisitor()
         root.accept(visitor)
-        return visitor.samples
+        return visitor.sample
     }
 
     private static class HeadingVisitor extends AbstractVisitor {
-        private static Map<String, SampleDocumentation> samples = [:]
+        private SampleDocumentation sample = null;
 
         @Override
         void visit(Heading heading) {
@@ -59,23 +68,7 @@ class Documentation {
                 return
             }
             def name = matcher.group(1)
-            Node node = heading.next
-            while (node != null) {
-                if (node instanceof Heading && node.level <= 2) {
-                    break
-                }
-                if (node instanceof Heading && node.level == 3) {
-                    def lang = getText(node)
-                    if (lang == 'C++') {
-                        samples.put("cpp/" + name, new SampleDocumentation(name, node))
-                    } else if (lang == 'C') {
-                        samples.put("c/" + name, new SampleDocumentation(name, node))
-                    } else if (lang.matches('Swift(\\s+4)?')) {
-                        samples.put("swift/" + name, new SampleDocumentation(name, node))
-                    }
-                }
-                node = node.next
-            }
+            sample = new SampleDocumentation(name, heading)
         }
 
         private String getText(Heading heading) {

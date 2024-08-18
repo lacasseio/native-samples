@@ -1,0 +1,64 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+import org.gradle.samples.plugins.generators.GitRepoTask
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        cmakeAppProject("app").buildRoot()
+        cmakeAppProject("app").fromTemplate("cpp-app-cmake-build")
+        cmakeAppProject("app").fromTemplate("cpp-app")
+        cmakeAppProject("app").fromTemplate(cppMessageLib)
+        cmakeAppProject("app").fromTemplate("cpp-message-static")
+        cmakeProject("utilities").buildRoot()
+        cmakeProject("utilities").fromTemplate("cpp-utilities-lib-cmake-build")
+        cmakeProject("utilities").fromTemplate(cppUtilsLib)
+        cmakeProject("list").buildRoot()
+        cmakeProject("list").fromTemplate("cpp-list-lib-cmake-build")
+        cmakeProject("list").fromTemplate(cppListLib)
+        project("build-wrapper-plugin").buildRoot()
+        project("build-wrapper-plugin").fromTemplate("build-wrapper-plugin")
+    }
+
+    gradle.rootProject {
+        task generateCppCmakeSourceDependenciesPluginRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("build-wrapper-plugin")
+            change {
+                tag("1.0")
+                message("initial version")
+            }
+        }
+
+        task generateCppCmakeSourceDependenciesListLibraryRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("list")
+            change {
+                tag("1.0")
+                message("initial version")
+            }
+        }
+
+        task generateCppCmakeSourceDependenciesUtilityLibraryRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("utilities")
+            change {
+                tag("1.0")
+                message("initial version")
+            }
+        }
+
+        task generateCppCmakeSourceDependenciesUtilityAppRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("app")
+            change {
+                tag("1.0")
+                message("initial version")
+            }
+        }
+    }
+}

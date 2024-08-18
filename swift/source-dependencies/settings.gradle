@@ -1,3 +1,14 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        appProject(".").buildRoot()
+        appProject(".").fromTemplate("swift-app")
+    }
+}
+
 rootProject.name = 'app'
 
 sourceControl {

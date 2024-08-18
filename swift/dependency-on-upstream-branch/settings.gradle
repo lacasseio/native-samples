@@ -1,0 +1,52 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+import org.gradle.samples.plugins.generators.GitRepoTask
+sample {
+    copySource {
+        def swiftUtilsLib = SwiftLibraryTemplate.of("swift-lib-with-api-dep", "Utilities")
+        def swiftListLib = SwiftLibraryTemplate.of("swift-lib", "List")
+
+        appProject("app").buildRoot()
+        appProject("app").fromTemplate("swift-app")
+        libProject("utilities-library").buildRoot()
+        libProject("utilities-library").fromTemplate(swiftUtilsLib)
+        libProject("utilities-library").fromTemplate("swift-utilities-lib-build")
+        libProject("list-library").buildRoot()
+        libProject("list-library").fromTemplate(swiftListLib)
+        libProject("list-library").fromTemplate("swift-list-lib-build")
+    }
+
+    gradle.rootProject {
+        task generateBranchSwiftListRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("list-library")
+            change { ch ->
+                tag("1.0")
+                message("initial version")
+            }
+        }
+
+        task generateBranchSwiftUtilitiesRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("utilities-library")
+            change { ch ->
+                changeContent("src/main/swift/Util.swift", "var i = 0", """// BUG: i = 1 should be i = 0
+                var i = 1""")
+                tag("1.0")
+                message("initial version")
+            }
+            change { ch ->
+                branch("release")
+                changeContent("build.gradle", "version = '1.0'", "version = '1.1'")
+                message("branch for release")
+            }
+            change { ch ->
+                checkout("master")
+                changeContent("build.gradle", "version = '1.0'", "version = '2.0'")
+                message("prepare next version")
+            }
+        }
+    }
+}

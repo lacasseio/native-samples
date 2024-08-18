@@ -4,6 +4,8 @@ import org.gradle.samples.fixtures.Samples
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Unroll
 
+import static org.gradle.samples.fixtures.Samples.withArgs
+
 class ExecuteCSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
     @Unroll
     def "can build C '#sample.name'"() {
@@ -14,17 +16,17 @@ class ExecuteCSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         expect:
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
-                .withArguments("build")
+                .withArguments(withArgs("build"))
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
-                .withArguments("xcode")
+                .withArguments(withArgs("xcode"))
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
-                .withArguments("assembleRelease")
+                .withArguments(withArgs("assembleRelease"))
                 .build()
 
         where:

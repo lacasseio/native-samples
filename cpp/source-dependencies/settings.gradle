@@ -1,3 +1,18 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        appProject(".").buildRoot()
+        appProject(".").fromTemplate("cpp-app")
+        appProject(".").fromTemplate(cppMessageLib)
+        appProject(".").fromTemplate("cpp-message-static")
+    }
+}
+
 rootProject.name = 'app'
 
 sourceControl {

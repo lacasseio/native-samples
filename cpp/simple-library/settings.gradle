@@ -1,1 +1,14 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+
+        libProject(".").buildRoot()
+        libProject(".").fromTemplate(cppListLib)
+    }
+}
+
 rootProject.name = 'list'

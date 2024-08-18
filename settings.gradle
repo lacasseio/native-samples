@@ -1,0 +1,70 @@
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id.startsWith("org.gradle.samples.")) {
+                useModule("org.gradle.samples.plugins:plugins:1.0")
+            }
+        }
+    }
+//    includeBuild 'gradle/submodules/docs-plugins'
+    includeBuild 'samples-dev/plugins'
+}
+
+plugins {
+    id 'dev.nokee.samples'
+}
+
+includeBuild 'samples-dev/src/templates/build-wrapper-plugin'
+includeBuild 'samples-dev/src/templates/custom-publication-plugin'
+includeBuild 'samples-dev/src/templates/release-plugin'
+
+include 'samples-dev'
+
+samples {
+    include 'c/application'
+
+    include 'cpp/application'
+    include 'cpp/autotools-library'
+    include 'cpp/binary-dependencies'
+    include 'cpp/cmake-library'
+    include 'cpp/cmake-source-dependencies'
+    include 'cpp/composite-build'
+    include 'cpp/dependency-on-upstream-branch'
+    include 'cpp/header-only-library'
+    include 'cpp/injected-plugins'
+    include 'cpp/library-with-tests'
+    include 'cpp/multiple-target-machines'
+    include 'cpp/operating-system-specific-dependencies'
+    include 'cpp/prebuilt-binaries'
+    include 'cpp/precompiled-headers'
+//    include 'cpp/provisionable-tool-chains'
+    include 'cpp/publish-macros'
+    include 'cpp/simple-library'
+    include 'cpp/source-dependencies'
+    include 'cpp/source-generation'
+    include 'cpp/static-library'
+    include 'cpp/swift-package-manager'
+    include 'cpp/swift-package-manager-publish'
+    include 'cpp/transitive-dependencies'
+    include 'cpp/windows-resources'
+
+    include 'swift/application'
+    include 'swift/composite-build'
+    include 'swift/cpp-dependencies'
+    include 'swift/dependency-on-upstream-branch'
+    include 'swift/injected-plugins'
+    include 'swift/ios-application'
+    include 'swift/multiple-target-machines'
+    include 'swift/operating-system-specific-dependencies'
+    include 'swift/prebuilt-binaries'
+//    include 'swift/provisionable-tool-chains'
+    include 'swift/simple-library'
+    include 'swift/source-dependencies'
+    include 'swift/source-generation'
+    include 'swift/static-library'
+    include 'swift/swift-package-manager'
+    include 'swift/swift-package-manager-publish'
+    include 'swift/system-library-as-module'
+    include 'swift/transitive-dependencies'
+    include 'swift/swift-versions'
+}

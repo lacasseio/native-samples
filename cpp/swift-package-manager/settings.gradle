@@ -1,2 +1,21 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        project(".").buildRoot()
+        swiftPMProject(".", "App").fromTemplate("cpp-app")
+        swiftPMProject(".", "App").fromTemplate(cppMessageLib)
+        swiftPMProject(".", "App").fromTemplate("cpp-message-static")
+        swiftPMProject(".", "Utilities").fromTemplate(cppUtilsLib)
+        swiftPMProject(".", "List").fromTemplate(cppListLib)
+    }
+}
+
 include 'app', 'utilities', 'list'
 

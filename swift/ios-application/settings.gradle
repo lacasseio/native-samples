@@ -1,3 +1,14 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        project(".").buildRoot()
+        project("ios-plugin").buildRoot()
+    }
+}
+
 rootProject.name = 'app'
 
 includeBuild 'ios-plugin'

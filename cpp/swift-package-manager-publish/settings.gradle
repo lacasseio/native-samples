@@ -1,0 +1,50 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+import org.gradle.samples.plugins.generators.GitRepoTask
+sample {
+    copySource {
+        def cppUtilsLib = CppLibraryTemplate.of("cpp-lib-with-api-dep", "utilities")
+        def cppListLib = CppLibraryTemplate.of("cpp-lib", "list")
+        def cppMessageLib = CppLibraryTemplate.of("cpp-message-api", "message")
+
+        swiftPMProject("app", "App").fromTemplate("cpp-app")
+        swiftPMProject("app", "App").fromTemplate(cppMessageLib)
+        swiftPMProject("app", "App").fromTemplate("cpp-message-static")
+
+        project("release-plugin").buildRoot()
+        project("release-plugin").fromTemplate("release-plugin")
+
+        libProject("list-library").buildRoot()
+        libProject("list-library").noPrivateHeaderDir()
+        libProject("list-library").fromTemplate("cpp-list-lib-build-with-release")
+        libProject("list-library").fromTemplate(cppListLib)
+
+        libProject("utilities-library").buildRoot()
+        libProject("utilities-library").noPrivateHeaderDir()
+        libProject("utilities-library").fromTemplate("cpp-utilities-lib-build-with-release")
+        libProject("utilities-library").fromTemplate(cppUtilsLib)
+    }
+
+    gradle.rootProject {
+        task generatePublishCppReleasePluginRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("release-plugin")
+            change { ch ->
+                tag("1.0")
+                message("initial version")
+            }
+        }
+
+        task generatePublishCppListRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("list-library")
+        }
+
+        task generatePublishCppUtilitiesRepo(type: GitRepoTask) {
+            dependsOn generateSource
+            sampleDir = file("utilities-library")
+        }
+    }
+}

@@ -1,1 +1,17 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def swiftUtilsLib = SwiftLibraryTemplate.of("swift-lib-with-api-dep", "Utilities")
+        def swiftListLib = SwiftLibraryTemplate.of("swift-lib", "List")
+
+        project(".").buildRoot()
+        appProject("app").fromTemplate("swift-app")
+        libProject("utilities").fromTemplate(swiftUtilsLib)
+        libProject("list").fromTemplate(swiftListLib)
+    }
+}
+
 include 'app', 'utilities', 'list'

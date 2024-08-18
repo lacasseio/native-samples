@@ -1,1 +1,14 @@
+plugins {
+    id 'dev.nokee.sample'
+}
+
+sample {
+    copySource {
+        def swiftListLib = SwiftLibraryTemplate.of("swift-lib", "List")
+
+        libProject(".").buildRoot()
+        libProject(".").fromTemplate(swiftListLib)
+    }
+}
+
 rootProject.name = 'list'
