@@ -48,8 +48,7 @@ public class GeneratorPlugin implements Plugin<Project> {
             Provider<List<org.gradle.samples.plugins.Sample>> samples = project.provider(() -> project.getRootProject().getExtensions().findByType(Samples.class)).flatMap(Samples::toProvider).orElse(Collections.emptyList());
             task.dependsOn((Callable<?>) () -> {
                 return samples.map(transformEach(it -> {
-                    String name = project.getRootDir().toPath().relativize(it.getLocation()).toString().replace('/', '-');
-                    return project.getExtensions().getByType(ExternalBuilds.class).getByName(name).task(":samplesManifest");
+                    return project.getExtensions().getByType(ExternalBuilds.class).getByName(it.getName()).task(":samplesManifest");
                 })).get();
             });
             task.getManifest().set(project.file("samples-list.txt"));

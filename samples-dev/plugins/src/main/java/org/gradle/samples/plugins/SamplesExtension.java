@@ -22,18 +22,25 @@ import java.util.Set;
         Path resolve(String path);
     }
 
+    private interface SampleNamer {
+        String determineName(Path path);
+    }
+
     /*private*/ static abstract /*final*/ class ForSettings extends SamplesExtension implements SamplesExtensionInternal {
         private final Set<Sample> samples = new LinkedHashSet<>();
         private final PathResolver resolver;
+        private final SampleNamer namer;
 
         @Inject
-        public ForSettings(PathResolver resolver) {
+        public ForSettings(PathResolver resolver, SampleNamer namer) {
             this.resolver = resolver;
+            this.namer = namer;
         }
 
         @Override
         public void include(String path) {
-            samples.add(new DefaultSample(resolver.resolve(path)));
+            final Path location = resolver.resolve(path);
+            samples.add(new DefaultSample(namer.determineName(location), location));
         }
 
         @Override
@@ -48,7 +55,12 @@ import java.util.Set;
 
         @Override
         public void apply(Settings settings) {
-            final SamplesExtension.ForSettings extension = settings.getExtensions().create("samples", SamplesExtension.ForSettings.class, (PathResolver) settings.getSettingsDir().toPath()::resolve);
+            final SamplesExtension.ForSettings extension = settings.getExtensions().create("samples", SamplesExtension.ForSettings.class, (PathResolver) settings.getSettingsDir().toPath()::resolve, new SampleNamer() {
+                @Override
+                public String determineName(Path path) {
+                    return settings.getSettingsDir().toPath().relativize(path).toString().replace('/', '-');
+                }
+            });
 
             settings.getGradle().rootProject(project -> {
                 project.getPluginManager().apply(ForProject.Rule.class);
@@ -85,10 +97,17 @@ import java.util.Set;
     }
 
     private static final class DefaultSample implements Sample {
+        private final String name;
         private final Path location;
 
-        public DefaultSample(Path location) {
+        public DefaultSample(String name, Path location) {
+            this.name = name;
             this.location = location;
+        }
+
+        @Override
+        public String getName() {
+            return name;
         }
 
         @Override

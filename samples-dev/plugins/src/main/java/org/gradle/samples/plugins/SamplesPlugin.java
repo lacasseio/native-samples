@@ -27,7 +27,7 @@ import static org.gradle.samples.plugins.util.TransformEachTransformer.transform
             ExternalBuildManagement externalBuildManagement = settings.getExtensions().getByType(ExternalBuildManagement.class);
             for (Sample sample : settings.getExtensions().getByType(SamplesExtensionInternal.class)) {
                 externalBuildManagement.externalBuild(sample.getLocation(), it -> {
-                    it.getName().set(it.getProjectDirectory().map(d -> settings.getSettingsDir().toPath().relativize(d.getAsFile().toPath()).toString().replace('/', '-')));
+                    it.getName().set(it.getName());
                 });
             }
         });
@@ -38,8 +38,7 @@ import static org.gradle.samples.plugins.util.TransformEachTransformer.transform
             project.getTasks().named("generateSource", task -> {
                 task.dependsOn((Callable<?>) () -> {
                     return project.provider(() -> project.getExtensions().findByType(Samples.class)).flatMap(Samples::toProvider).orElse(Collections.emptyList()).map(transformEach(it -> {
-                        String name = settings.getSettingsDir().toPath().relativize(it.getLocation()).toString().replace('/', '-');
-                        return project.getExtensions().getByType(ExternalBuilds.class).getByName(name).task(":generateSource");
+                        return project.getExtensions().getByType(ExternalBuilds.class).getByName(it.getName()).task(":generateSource");
                     })).get();
                 });
             });
@@ -47,8 +46,7 @@ import static org.gradle.samples.plugins.util.TransformEachTransformer.transform
             project.getTasks().register("cleanSamples", task -> {
                 task.dependsOn((Callable<?>) () -> {
                     return project.provider(() -> project.getExtensions().findByType(Samples.class)).flatMap(Samples::toProvider).orElse(Collections.emptyList()).map(transformEach(it -> {
-                        String name = settings.getSettingsDir().toPath().relativize(it.getLocation()).toString().replace('/', '-');
-                        return project.getExtensions().getByType(ExternalBuilds.class).getByName(name).task(":cleanSample");
+                        return project.getExtensions().getByType(ExternalBuilds.class).getByName(it.getName()).task(":cleanSample");
                     })).get();
                 });
             });
