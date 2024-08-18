@@ -1,6 +1,12 @@
 # Gradle Files
 build
 .gradle
+/**/gradle/wrapper/
+cpp/cmake-source-dependencies/gradlew*
+cpp/dependency-on-upstream-branch/gradlew*
+cpp/swift-package-manager-publish/gradlew*
+swift/dependency-on-upstream-branch/gradlew*
+swift/swift-package-manager-publish/gradlew*
 
 # Local repository
 cpp/repo
