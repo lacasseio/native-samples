@@ -62,17 +62,24 @@ public final class AdhocExternalBuildFactory {
         public ExternalBuild.TaskReference create(String taskPath) {
             assert taskPath.startsWith(":") : "must be an absolute task path";
             return new ExternalTaskReference() {
-                private final TaskProvider<CrossProjectTask> referenceTask = tasks.register(location.taskFragment() + "_" + taskPath.replace(':', '_'), CrossProjectTask.class, task -> {
-                    task.setDescription(String.format("[internal] Execute task '%s' on external project '%s'.", taskPath, location.getRelativePath()));
-                    task.parameters(parameters -> {
-                        parameters.getTaskPath().set(taskPath);
-                        parameters.getProjectDirectory().set(location.getPath());
-                    });
-                });
+                private TaskProvider<CrossProjectTask> referenceTask;
+
+                private TaskProvider<CrossProjectTask> referenceTask() {
+                    if (referenceTask == null) {
+                        referenceTask = tasks.register(location.taskFragment() + "_" + taskPath.replace(':', '_'), CrossProjectTask.class, task -> {
+                            task.setDescription(String.format("[internal] Execute task '%s' on external project '%s'.", taskPath, location.getRelativePath()));
+                            task.parameters(parameters -> {
+                                parameters.getTaskPath().set(taskPath);
+                                parameters.getProjectDirectory().set(location.getPath());
+                            });
+                        });
+                    }
+                    return referenceTask;
+                }
 
                 @Override
                 public TaskDependency getBuildDependencies() {
-                    return __ -> Collections.singleton(referenceTask.get());
+                    return __ -> Collections.singleton(referenceTask().get());
                 }
             };
         }
@@ -101,27 +108,36 @@ public final class AdhocExternalBuildFactory {
 
     private static final class DefaultModelReferenceFactory implements ModelReferenceFactory {
         private final TaskContainer tasks;
+        private final ProviderFactory providers;
         private final ExternalBuildLocation location;
 
-        private DefaultModelReferenceFactory(TaskContainer tasks, ExternalBuildLocation location) {
+        private DefaultModelReferenceFactory(TaskContainer tasks, ProviderFactory providers, ExternalBuildLocation location) {
             this.tasks = tasks;
+            this.providers = providers;
             this.location = location;
         }
 
         @Override
         public <T> ExternalBuild.ModelReference<T> create(Class<T> model) {
             return new ExternalModelReference<T>() {
-                private final TaskProvider<CrossProjectModelTask> referenceTask = tasks.register(location.taskFragment() + "__" + model.getName(), CrossProjectModelTask.class, task -> {
-                    task.setDescription(String.format("[internal] Query model '%s' on external project '%s'.", model.getCanonicalName(), location.getRelativePath()));
-                    task.parameters(parameters -> {
-                        parameters.getModelType().set(model.getCanonicalName());
-                        parameters.getProjectDirectory().set(location.getPath());
-                    });
-                });
+                private TaskProvider<CrossProjectModelTask> referenceTask;
+
+                private TaskProvider<CrossProjectModelTask> referenceTask() {
+                    if (referenceTask == null) {
+                        referenceTask = tasks.register(location.taskFragment() + "__" + model.getName(), CrossProjectModelTask.class, task -> {
+                            task.setDescription(String.format("[internal] Query model '%s' on external project '%s'.", model.getCanonicalName(), location.getRelativePath()));
+                            task.parameters(parameters -> {
+                                parameters.getModelType().set(model.getCanonicalName());
+                                parameters.getProjectDirectory().set(location.getPath());
+                            });
+                        });
+                    }
+                    return referenceTask;
+                }
 
                 @Override
                 public Provider<T> asProvider() {
-                    return referenceTask.map(CrossProjectModelTask::getDeserializedModel);
+                    return providers.provider(this::referenceTask).flatMap(it -> it.map(CrossProjectModelTask::getDeserializedModel));
                 }
             };
         }
@@ -138,7 +154,7 @@ public final class AdhocExternalBuildFactory {
         public DefaultExternalBuild(ProviderFactory providers, TaskContainer tasks, ExternalBuildLocation projectDirectory) {
             this.projectDirectory = providers.provider(() -> projectDirectory.getPath());
             this.taskReferenceFactory = new CachingTaskReferenceFactory(new DefaultTaskReferenceFactory(tasks, projectDirectory));
-            this.modelReferenceFactory = new CachingModelReferenceFactory(new DefaultModelReferenceFactory(tasks, projectDirectory));
+            this.modelReferenceFactory = new CachingModelReferenceFactory(new DefaultModelReferenceFactory(tasks, providers, projectDirectory));
         }
 
         @Override
