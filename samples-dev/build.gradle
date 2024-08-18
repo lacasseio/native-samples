@@ -7,16 +7,6 @@ plugins {
     id "org.gradle.samples.generators"
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation gradleTestKit()
     testImplementation platform("org.spockframework:spock-bom:2.3-groovy-3.0")

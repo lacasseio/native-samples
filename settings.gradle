@@ -20,6 +20,18 @@ includeBuild 'samples-dev/src/templates/release-plugin'
 
 include 'samples-dev'
 
+gradle.allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    pluginManager.withPlugin('java-base') {
+        java {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+}
+
 samples {
     include 'c/application'
 
