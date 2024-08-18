@@ -54,7 +54,7 @@ public class GeneratorPlugin implements Plugin<Project> {
             });
             task.getManifest().set(project.file("samples-list.txt"));
             task.getManifestFiles().from(manifestTaskLegacy.map(it -> it.getManifest().get()));
-            task.getManifestFiles().from(samples.map(transformEach(it -> it.getLocation().resolve("samples-list.txt"))));
+            task.getManifestFiles().from(samples.map(transformEach(it -> it.getLocation().resolve("build/samples-list.txt"))));
         });
 
         // Add a task to clean the samples

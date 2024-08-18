@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
             TaskCollection<SampleGeneratorTask> generatorTasks = project.getTasks().withType(SampleGeneratorTask.class);
             TaskCollection<GitRepoTask> repoTasks = project.getTasks().withType(GitRepoTask.class);
             TaskProvider<SamplesManifestTask> manifestTask = project.getTasks().register("samplesManifest", SamplesManifestTask.class, task -> {
-                task.getManifest().set(project.file("samples-list.txt"));
+                task.getManifest().set(project.getLayout().getBuildDirectory().file("samples-list.txt"));
                 task.getRepoDirs().set(project.provider(() -> {
                     return repoTasks.stream().map(generator -> {
                         return generator.getSampleDir().get().getAsFile().getAbsolutePath();
