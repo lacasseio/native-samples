@@ -11,6 +11,16 @@ Each C++ sample works on macOS, Linux and Windows with GCC, Clang and Visual C++
 
 Each Swift sample works on macOS and Linux, with Swift 3 and later.
 
+## Getting Started
+
+First copy the init script to your user home.
+Because of limitation in Gradle, we have to consume sample project as external builds (homologue to included builds).
+To ensure correctness, we need to inject additional configuration which we do via the init script.
+
+```
+> cp sample.init.gradle ~/.gradle/init.d/
+```
+
 ## Deeper build insights with Build Scans
 
 You can generate [build-scans](https://gradle.com/build-scans) with these samples by running Gradle with `--scan`.  At the end of the build, you will be prompted to upload build data to [scans.gradle.com](https://scans.gradle.com/get-started).
