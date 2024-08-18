@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
         settings.getGradle().rootProject(project -> {
             project.getPluginManager().apply("samplesdev.rules.sample-lifecycle-base");
 
-            TaskCollection<SampleGeneratorTask> generatorTasks = project.getTasks().withType(SampleGeneratorTask.class);
             TaskCollection<GitRepoTask> repoTasks = project.getTasks().withType(GitRepoTask.class);
             TaskProvider<SamplesManifestTask> manifestTask = project.getTasks().register("samplesManifest", SamplesManifestTask.class, task -> {
                 task.getManifest().set(project.getLayout().getBuildDirectory().file("samples-list.txt"));
