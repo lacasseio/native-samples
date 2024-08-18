@@ -14,14 +14,14 @@ import javax.inject.Inject;
 
 import static dev.nokee.samples.externalbuilds.internal.NeverUpToDateTaskSpec.never_alwaysExecute;
 
-public abstract /*final*/ class CrossProjectTask extends ParameterizedTask.UsingWorker<CrossProjectTask.Parameters> implements MaxParallelGradleTask, GradleVersionAwareParameterTask<CrossProjectTask.Parameters> {
+public abstract /*final*/ class CrossProjectTask extends ParameterizedTask.UsingWorker<CrossProjectTask.Parameters> implements MaxParallelGradleTask, GradleVersionAwareParameterTask<CrossProjectTask.Parameters>, GradleToolingTask<CrossProjectTask.Parameters> {
         @Inject
         public CrossProjectTask(WorkerExecutor worker) {
             super(TaskWorkAction.class, worker::noIsolation);
             getOutputs().upToDateWhen(never_alwaysExecute());
         }
 
-        public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, ParameterizedTask.UsingWorker.CopyTo<Parameters> {
+        public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, GradleToolingTask.Parameters, ParameterizedTask.UsingWorker.CopyTo<Parameters> {
             @Internal
             Property<String> getTaskPath();
 
@@ -44,6 +44,7 @@ public abstract /*final*/ class CrossProjectTask extends ParameterizedTask.Using
 
                 try (ProjectConnection connection = connector.connect()) {
                     final BuildLauncher launcher = connection.newBuild().forTasks(getParameters().getTaskPath().get());
+                    launcher.withArguments(getParameters().getArguments().get());
                     launcher.run();
                 }
             }

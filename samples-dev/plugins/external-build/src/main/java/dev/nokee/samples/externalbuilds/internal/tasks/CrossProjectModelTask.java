@@ -20,7 +20,7 @@ import java.io.OutputStream;
 
 import static dev.nokee.samples.externalbuilds.internal.NeverUpToDateTaskSpec.never_alwaysExecute;
 
-/*private*/public abstract /*final*/ class CrossProjectModelTask extends ParameterizedTask.UsingWorker<CrossProjectModelTask.Parameters> implements MaxParallelGradleTask, GradleVersionAwareParameterTask<CrossProjectModelTask.Parameters>, ModelCacheAwareTask<CrossProjectModelTask.Parameters> {
+/*private*/public abstract /*final*/ class CrossProjectModelTask extends ParameterizedTask.UsingWorker<CrossProjectModelTask.Parameters> implements MaxParallelGradleTask, GradleVersionAwareParameterTask<CrossProjectModelTask.Parameters>, ModelCacheAwareTask<CrossProjectModelTask.Parameters>, GradleToolingTask<CrossProjectModelTask.Parameters> {
     @Inject
     public CrossProjectModelTask(WorkerExecutor worker, ProviderFactory providers) {
         super(TaskWorkAction.class, worker::noIsolation);
@@ -28,7 +28,7 @@ import static dev.nokee.samples.externalbuilds.internal.NeverUpToDateTaskSpec.ne
         getOutputs().upToDateWhen(never_alwaysExecute());
     }
 
-    public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, ModelCacheAwareTask.Parameters, ParameterizedTask.UsingWorker.CopyTo<Parameters> {
+    public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, ModelCacheAwareTask.Parameters, GradleToolingTask.Parameters, ParameterizedTask.UsingWorker.CopyTo<Parameters> {
         @Internal
         Property<String> getModelType();
 
@@ -61,6 +61,7 @@ import static dev.nokee.samples.externalbuilds.internal.NeverUpToDateTaskSpec.ne
             try (OutputStream outStream = new FileOutputStream(getParameters().getOutputFile().getAsFile().get())) {
                 try (ProjectConnection connection = connector.connect()) {
                     final ModelBuilder<?> launcher = connection.model(Class.forName(getParameters().getModelType().get()));
+                    launcher.withArguments(getParameters().getArguments().get());
                     launcher.setStandardError(outStream);
                     launcher.setStandardOutput(outStream);
                     Object obj = launcher.get();
