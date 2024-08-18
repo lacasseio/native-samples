@@ -1,6 +1,5 @@
 package org.gradle.samples.plugins.generators;
 
-import com.google.common.base.CaseFormat;
 import dev.nokee.samples.externalbuilds.ExternalBuilds;
 import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.Plugin;
@@ -81,11 +80,6 @@ public class GeneratorPlugin implements Plugin<Project> {
             addTasksForRepo(it, generateSource, project);
         });
 
-        extension.getSamples().all(it -> {
-            addTasksForSample(it, project);
-        });
-
-
         // Add a lifecycle task to generate the repositories
         project.getTasks().register("generateRepos", task -> {
             task.dependsOn(repoTasks);
@@ -117,14 +111,6 @@ public class GeneratorPlugin implements Plugin<Project> {
         });
         generateSource.configure(task -> {
             task.dependsOn(updateTask);
-        });
-    }
-
-    private void addTasksForSample(Sample sample, Project project) {
-        String sampleNameCamelCase = CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, sample.getName());
-        TaskProvider<SourceCopyTask> sourceCopyTask = project.getTasks().register(sampleNameCamelCase, SourceCopyTask.class, task -> {
-            task.getSampleDir().set(sample.getSampleDir());
-            sample.getSourceActions().forEach( it -> it.execute(task));
         });
     }
 }
