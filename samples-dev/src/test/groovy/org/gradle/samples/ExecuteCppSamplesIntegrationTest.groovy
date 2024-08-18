@@ -77,7 +77,7 @@ class ExecuteCppSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
 
         SwiftPmRunner.create()
                 .withProjectDir(new File(sample.sampleDir, "list-library"))
-                .withArguments("build")
+                .withArguments(withArgs("build"))
                 .build()
 
         GradleRunner.create()
@@ -87,12 +87,12 @@ class ExecuteCppSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
 
         SwiftPmRunner.create()
                 .withProjectDir(new File(sample.sampleDir, "utilities-library"))
-                .withArguments("build")
+                .withArguments(withArgs("build"))
                 .build()
 
         SwiftPmRunner.create()
                 .withProjectDir(new File(sample.sampleDir, "app"))
-                .withArguments("build")
+                .withArguments(withArgs("build"))
                 .build()
     }
 
