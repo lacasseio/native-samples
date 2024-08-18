@@ -28,7 +28,7 @@ import static dev.nokee.samples.externalbuilds.internal.NeverUpToDateTaskSpec.ne
         getOutputs().upToDateWhen(never_alwaysExecute());
     }
 
-    public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, ModelCacheAwareTask.Parameters, CopyTo<Parameters> {
+    public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, ModelCacheAwareTask.Parameters, ParameterizedTask.UsingWorker.CopyTo<Parameters> {
         @Internal
         Property<String> getModelType();
 

@@ -21,7 +21,7 @@ public abstract /*final*/ class CrossProjectTask extends ParameterizedTask.Using
             getOutputs().upToDateWhen(never_alwaysExecute());
         }
 
-        public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, CopyTo<Parameters> {
+        public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, GradleVersionAwareParameterTask.Parameters, ParameterizedTask.UsingWorker.CopyTo<Parameters> {
             @Internal
             Property<String> getTaskPath();
 
