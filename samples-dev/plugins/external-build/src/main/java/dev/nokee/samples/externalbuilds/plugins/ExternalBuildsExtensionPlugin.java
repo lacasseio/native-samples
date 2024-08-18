@@ -56,6 +56,7 @@ import static dev.nokee.samples.externalbuilds.internal.TransformEachTransformer
 
         @Override
         public ExternalBuild getByName(String name) {
+            knownExternalBuilds.iterator();
             return knownExternalBuilds.getByName(name);
         }
 

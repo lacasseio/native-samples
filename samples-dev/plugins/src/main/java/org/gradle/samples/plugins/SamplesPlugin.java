@@ -1,6 +1,7 @@
 package org.gradle.samples.plugins;
 
 import dev.nokee.samples.externalbuilds.ExternalBuildManagement;
+import dev.nokee.samples.externalbuilds.ExternalBuilds;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
 import org.gradle.samples.plugins.tasks.NewSampleTask;
@@ -38,7 +39,16 @@ import static org.gradle.samples.plugins.util.TransformEachTransformer.transform
                 task.dependsOn((Callable<?>) () -> {
                     return project.provider(() -> project.getExtensions().findByType(Samples.class)).flatMap(Samples::toProvider).orElse(Collections.emptyList()).map(transformEach(it -> {
                         String name = settings.getSettingsDir().toPath().relativize(it.getLocation()).toString().replace('/', '-');
-                        return project.getExtensions().getByType(dev.nokee.samples.externalbuilds.ExternalBuilds.class).getByName(name).task(":generateSource");
+                        return project.getExtensions().getByType(ExternalBuilds.class).getByName(name).task(":generateSource");
+                    })).get();
+                });
+            });
+
+            project.getTasks().register("cleanSamples", task -> {
+                task.dependsOn((Callable<?>) () -> {
+                    return project.provider(() -> project.getExtensions().findByType(Samples.class)).flatMap(Samples::toProvider).orElse(Collections.emptyList()).map(transformEach(it -> {
+                        String name = settings.getSettingsDir().toPath().relativize(it.getLocation()).toString().replace('/', '-');
+                        return project.getExtensions().getByType(ExternalBuilds.class).getByName(name).task(":cleanSample");
                     })).get();
                 });
             });

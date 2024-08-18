@@ -10,7 +10,6 @@ import org.gradle.api.tasks.TaskAction;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 
 /**
  * Generates a manifest file listing the location of each generated sample.
@@ -24,12 +23,10 @@ public class SamplesManifestTask extends DefaultTask {
     private void generate() throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(manifest.get().getAsFile()))) {
             for (String path : sampleDirs.get()) {
-                String relPath = getProject().getProjectDir().toPath().relativize(Paths.get(path)).toString();
-                writer.println("sample=" + relPath);
+                writer.println("sample=" + path);
             }
             for (String path : repoDirs.get()) {
-                String relPath = getProject().getProjectDir().toPath().relativize(Paths.get(path)).toString();
-                writer.println("repo=" + relPath);
+                writer.println("repo=" + path);
             }
         }
     }

@@ -5,7 +5,9 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.samples.plugins.generators.CppLibraryTemplate;
 import org.gradle.samples.plugins.generators.SourceCopyTask;
+import org.gradle.samples.plugins.generators.SwiftLibraryTemplate;
 import org.gradle.samples.plugins.util.ClosureWrappedConfigureAction;
 import org.gradle.util.Configurable;
 import org.gradle.util.ConfigureUtil;
@@ -46,6 +48,9 @@ public abstract /*final*/ class CopySourceExtension {
                 settings.getGradle().rootProject(project -> {
                     TaskProvider<SourceCopyTask> generatorTask = project.getTasks().register("gen", SourceCopyTask.class);
                     generatorTask.configure(task -> {
+                        task.getExtensions().add(SwiftLibraryTemplate.class.getSimpleName(), SwiftLibraryTemplateExtension.class);
+                        task.getExtensions().add(CppLibraryTemplate.class.getSimpleName(), CppLibraryTemplateExtension.class);
+
                         task.getSampleDir().set(project.getProjectDir());
                         task.getTemplatesDir().fileProvider(project.provider(() -> {
                             File baseDir = project.getProjectDir();
@@ -62,6 +67,18 @@ public abstract /*final*/ class CopySourceExtension {
                     });
                 });
             });
+        }
+    }
+
+    public static class SwiftLibraryTemplateExtension {
+        public SwiftLibraryTemplate of(String templateName, String module) {
+            return SwiftLibraryTemplate.of(templateName, module);
+        }
+    }
+
+    public static class CppLibraryTemplateExtension {
+        public CppLibraryTemplate of(String templateName, String module) {
+            return CppLibraryTemplate.of(templateName, module);
         }
     }
 }

@@ -20,7 +20,7 @@ sample {
     gradle.rootProject {
         task generateMinimalCppListRepo(type: GitRepoTask) {
             dependsOn generateSource
-            sampleDir = file("list-library")
+            sampleDir = file("repos/list-library")
             change { ch ->
                 tag("1.0")
                 message("initial version")
