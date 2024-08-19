@@ -6,7 +6,9 @@
 
 tasks.register('prepareSimpleLib') {
     dependsOn(externalBuilds.named('cpp-simple-library').with { [task(':assembleRelease'), task(':assembleDebug')] })
-    dependsOn(externalBuilds.named('swift-simple-library').with { [task(':assembleRelease'), task(':assembleDebug')] })
+    if (!System.getProperty('os.name').toLowerCase().contains('win')) {
+        dependsOn(externalBuilds.named('swift-simple-library').with { [task(':assembleRelease'), task(':assembleDebug')] })
+    }
 }
 
 tasks.named('generateSource') { mustRunAfter 'prepareSimpleLib' }
@@ -14,6 +16,10 @@ tasks.named('generateRepos') { mustRunAfter 'prepareSimpleLib' }
 
 tasks.register('prepare') {
     dependsOn('prepareSimpleLib')
-    dependsOn('generateSource')
-    dependsOn('generateRepos')
+    dependsOn {
+        def deps = files(samples.toProvider().get().findAll { !(System.getProperty("os.name").toLowerCase().contains("win") && it.name.startsWith('swift-')) }.collect {
+            externalBuilds.named(it.name).with { [task(':generateSource'), task(':generateRepos')] }
+        }).buildDependencies
+        return deps.getDependencies(null).collect { it.mustRunAfter('prepareSimpleLib') }
+    }
 }
