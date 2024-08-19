@@ -192,7 +192,7 @@ public final class AdhocExternalBuildFactory {
             }
 
             private String taskFragment() {
-                return relativePath.replace('/', '_');
+                return relativePath.replace('/', '_').replace('\\', '_');
             }
         }
 }
