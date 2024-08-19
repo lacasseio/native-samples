@@ -9,6 +9,9 @@ tasks.register('prepareSimpleLib') {
     dependsOn(externalBuilds.named('swift-simple-library').with { [task(':assembleRelease'), task(':assembleDebug')] })
 }
 
+tasks.named('generateSource') { mustRunAfter 'prepareSimpleLib' }
+tasks.named('generateRepos') { mustRunAfter 'prepareSimpleLib' }
+
 tasks.register('prepare') {
     dependsOn('prepareSimpleLib')
     dependsOn('generateSource')
