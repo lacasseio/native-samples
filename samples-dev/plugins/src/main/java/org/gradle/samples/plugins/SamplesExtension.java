@@ -58,7 +58,7 @@ import java.util.Set;
             final SamplesExtension.ForSettings extension = settings.getExtensions().create("samples", SamplesExtension.ForSettings.class, (PathResolver) settings.getSettingsDir().toPath()::resolve, new SampleNamer() {
                 @Override
                 public String determineName(Path path) {
-                    return settings.getSettingsDir().toPath().relativize(path).toString().replace('/', '-');
+                    return settings.getSettingsDir().toPath().relativize(path).toString().replace('/', '-').replace('\\', '-');
                 }
             });
 
