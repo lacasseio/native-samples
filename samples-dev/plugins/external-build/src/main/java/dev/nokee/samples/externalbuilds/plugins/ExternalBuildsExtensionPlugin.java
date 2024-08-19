@@ -30,6 +30,7 @@ import static dev.nokee.samples.externalbuilds.internal.TransformEachTransformer
         project.getPluginManager().apply("samplesdev.rules.max-parallel-gradle-tasks");
         project.getPluginManager().apply("samplesdev.rules.model-cache-tasks");
         project.getPluginManager().apply("samplesdev.rules.init-script-arguments");
+        project.getPluginManager().apply("sampledevs.rules.limit-concurrent-builds");
 
         project.getExtensions().create("externalBuilds", DefaultExternalBuilds.class, new AdhocExternalBuildFactory(project), new DirectoryResolver(project.getObjects()));
     }

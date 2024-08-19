@@ -20,7 +20,7 @@ import java.io.OutputStream;
 
 import static dev.nokee.samples.externalbuilds.internal.NeverUpToDateTaskSpec.never_alwaysExecute;
 
-/*private*/public abstract /*final*/ class CrossProjectModelTask extends ParameterizedTask.UsingWorker<CrossProjectModelTask.Parameters> implements MaxParallelGradleTask, GradleVersionAwareParameterTask<CrossProjectModelTask.Parameters>, ModelCacheAwareTask<CrossProjectModelTask.Parameters>, GradleToolingTask<CrossProjectModelTask.Parameters> {
+/*private*/public abstract /*final*/ class CrossProjectModelTask extends ParameterizedTask.UsingWorker<CrossProjectModelTask.Parameters> implements MaxParallelGradleTask, LimitConcurrentBuildTask, GradleVersionAwareParameterTask<CrossProjectModelTask.Parameters>, ModelCacheAwareTask<CrossProjectModelTask.Parameters>, GradleToolingTask<CrossProjectModelTask.Parameters> {
     @Inject
     public CrossProjectModelTask(WorkerExecutor worker, ProviderFactory providers) {
         super(TaskWorkAction.class, worker::noIsolation);
