@@ -39,6 +39,8 @@ public class ReleasePlugin implements Plugin<Project> {
                     execSpec.commandLine("git", "commit", "-a", "-m", "version " + project.getVersion());
                     execSpec.environment("GIT_AUTHOR_NAME", "John Smith");
                     execSpec.environment("GIT_AUTHOR_EMAIL", "john@example.com");
+                    execSpec.environment("GIT_COMMITTER_NAME", "John Smith");
+                    execSpec.environment("GIT_COMMITTER_EMAIL", "john@example.com");
                 });
                 project.exec(execSpec -> {
                     execSpec.commandLine("git", "tag", project.getVersion());

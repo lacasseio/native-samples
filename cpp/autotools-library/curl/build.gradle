@@ -21,8 +21,8 @@ def downloadAndExtractCurl = tasks.register("downloadAndExtractCurl", DownloadZi
 }
 
 autotools {
-    sourceDirectory = downloadAndExtractCurl.flatMap { it.sourceBase }
-    includeDirectory = downloadAndExtractCurl.flatMap { it.headerDir }
+    sourceDirectory = downloadAndExtractCurl.map { it.sourceBase.get() }
+    includeDirectory = downloadAndExtractCurl.map { it.headerDir.get() }
     binary = 'lib/libcurl.a'
 
     // Additional arguments to pass to the 'configure' command
