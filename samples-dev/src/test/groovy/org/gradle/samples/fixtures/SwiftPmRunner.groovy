@@ -13,6 +13,12 @@ class SwiftPmRunner {
         return this
     }
 
+    SwiftPmRunner withArguments(List<String> args) {
+        this.args.clear()
+        this.args.addAll(args);
+        return this
+    }
+
     SwiftPmRunner withArguments(String... args) {
         this.args.clear()
         this.args.addAll(args as List)
