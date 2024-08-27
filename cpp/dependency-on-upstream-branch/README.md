@@ -5,14 +5,13 @@ This sample shows how a source dependency on a particular branch can be used.
 To use this sample, create the Git repositories containing the libraries:
 
 ```
-> cd cpp/dependency-on-upstream-branch
-> ./gradlew generateRepos
+> cd cpp/dependency-on-upstream-branch/app
+> ./gradlew -p ../ generateRepos
 ```
 
 Build and run the application:
 
 ```
-> cd app
 > ./gradlew assemble
 
 BUILD SUCCESSFUL in 1s
