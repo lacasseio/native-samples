@@ -5,15 +5,15 @@ import org.gradle.samples.fixtures.Samples
 import org.gradle.samples.fixtures.SwiftPmRunner
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.jupiter.api.condition.DisabledOnOs
-import org.junit.jupiter.api.condition.OS
+import org.spockframework.runtime.extension.builtin.PreconditionContext
+import spock.lang.IgnoreIf
 import spock.lang.Unroll
 
 import static org.gradle.samples.fixtures.Samples.withArgs
 import static org.junit.jupiter.api.Assumptions.assumeFalse
 import static org.junit.jupiter.api.Assumptions.assumeTrue
 
-@DisabledOnOs(OS.WINDOWS)
+@IgnoreIf({ PreconditionContext it -> it.os.windows })
 class ExecuteSwiftSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
 
     @Unroll
