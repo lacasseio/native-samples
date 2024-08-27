@@ -6,7 +6,7 @@ To use the sample, create the Git repositories containing the libraries:
 
 ```
 > cd cpp/injected-plugins
-> ./gradlew -p ../.. generateRepos
+> ./gradlew generateRepos
 ```
 
 Now build the application:

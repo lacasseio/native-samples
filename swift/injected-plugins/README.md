@@ -6,7 +6,7 @@ To use the sample, create the Git repositories containing the libraries:
 
 ```
 > cd swift/injected-plugins
-> ./gradlew -p ../.. generateRepos
+> ./gradlew generateRepos
 ```
 
 Now build the application:

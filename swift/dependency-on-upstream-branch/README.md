@@ -5,13 +5,14 @@ This sample shows how a source dependency on a particular branch can be used.
 To use this sample, create the Git repositories containing the libraries:
 
 ```
-> cd swift/dependency-on-upstream-branch/app
-> ./gradlew -p ../../.. generateRepos
+> cd swift/dependency-on-upstream-branch
+> ./gradlew generateRepos
 ```
 
 Now you can build and run the application:
 
 ```
+> cd app
 > ./gradlew assemble
 
 BUILD SUCCESSFUL in 1s

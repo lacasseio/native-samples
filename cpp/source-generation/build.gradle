@@ -16,15 +16,15 @@ application {
 
 
 // Code generation implementation could be in another plugin or buildSrc
-class CodeGenerator extends DefaultTask {
+abstract class CodeGenerator extends DefaultTask {
     @OutputDirectory
-    DirectoryProperty cppDir = project.objects.directoryProperty()
+    abstract DirectoryProperty getCppDir()
     
     @OutputDirectory
-    DirectoryProperty headersDir = project.objects.directoryProperty()
+    abstract DirectoryProperty getHeadersDir()
 
     @TaskAction
-    public void generate() {
+    void generate() {
         generateSources(cppDir.getAsFile().get())
         generateHeaders(headersDir.getAsFile().get())
     }
