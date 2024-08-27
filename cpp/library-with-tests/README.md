@@ -6,7 +6,7 @@ To run the tests from the command line:
 
 ```
 > cd cpp/library-with-tests
-> ./gradlew -p ../.. generateRepos
+> ./gradlew generateRepos
 > ./gradlew assemble
 > ./gradlew test
 ```

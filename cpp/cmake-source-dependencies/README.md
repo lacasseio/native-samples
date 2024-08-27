@@ -8,7 +8,7 @@ To use the sample, first create the Git repository containing the sample plugin:
 
 ```
 > cd cpp/cmake-source-dependencies/app
-> ./gradlew -p ../../.. generateRepos
+> ./gradlew -p ../ generateRepos
 ```
 
 Now build the application:

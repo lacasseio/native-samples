@@ -11,7 +11,7 @@ To use the sample, first create the Git repository containing the sample plugin:
 
 ```
 > cd cpp/cmake-library
-> ./gradlew -p ../.. generateRepos
+> ./gradlew generateRepos
 ```
 
 Now build the application:
