@@ -5,8 +5,9 @@ This sample shows how libraries built with Gradle can be used by projects that a
 The sample is made up of an application built using Swift PM, and two libraries that are built using Gradle. The sample also includes a 'release' plugin that takes care of generating a Swift PM build from a Gradle build.
 
 ```
-> ./gradlew generateRepos
-> cd cpp/swift-package-manager-publish/list-library
+> cd cpp/swift-package-manager-publish
+> ./gradlew generateSource generateRepos
+> cd list-library
 > ./gradlew build release
 
 BUILD SUCCESSFUL in 1s

@@ -7,13 +7,14 @@ The sample is made up of an application built using Swift PM, and two libraries 
 To use the sample, setup the Git repositories for the libraries:
 
 ```
-> ./gradlew generateRepos
+> cd swift/swift-package-manager-publish
+> ./gradlew generateSource generateRepos
 ```
 
 Next, create a release of the list library that can be used by Swift PM. This generates a `Package.swift` file to be used by Swift PM, commits the changes and creates a tag:
 
 ```
-> cd swift/swift-package-manager-publish/list-library
+> cd list-library
 > ./gradlew build release
 
 BUILD SUCCESSFUL in 1s
