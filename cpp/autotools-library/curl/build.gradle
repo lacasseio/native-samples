@@ -33,6 +33,7 @@ autotools {
     configureArguments.add("--without-ssl")
     configureArguments.add("--disable-threaded-resolver")
     configureArguments.add("--disable-pthreads")
+    configureArguments.add("--without-brotli")
 
     // Additional arguments to pass to the 'make' command
     makeArguments.add("-j4")
