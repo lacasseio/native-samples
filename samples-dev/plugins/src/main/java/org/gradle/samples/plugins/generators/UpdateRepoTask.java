@@ -9,6 +9,7 @@ import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RelativePath;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -21,6 +22,7 @@ public class UpdateRepoTask extends DefaultTask {
     private final DirectoryProperty sampleDir = getProject().getObjects().directoryProperty();
     private final List<Action<? super Changes>> changes = new ArrayList<>();
 
+    @Internal
     boolean isDeleteRepo() {
         return false;
     }
@@ -75,7 +77,7 @@ public class UpdateRepoTask extends DefaultTask {
         }
     }
 
-
+    @Internal
     public DirectoryProperty getSampleDir() {
         return sampleDir;
     }
