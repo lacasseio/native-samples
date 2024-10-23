@@ -10,25 +10,30 @@ plugins {
     id 'maven-publish'
 }
 
-sourceCompatibility = 1.8
 version = '1.0'
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     testImplementation gradleTestKit()
-    testImplementation localGroovy()
-    testImplementation("org.spockframework:spock-core:1.1-groovy-2.4") {
-        exclude group: "org.codehaus.groovy"
-    }
+    testImplementation platform("org.spockframework:spock-bom:2.3-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
     testImplementation "com.atlassian.commonmark:commonmark:0.10.0"
 }
 
 def supportedLanguages = [file("../swift"), file("../cpp"), file("../c")]
 
-test {
+tasks.named('test', Test) {
+    useJUnitPlatform()
     // maxParallelForks = gradle.startParameter.maxWorkerCount
     inputs.files files(supportedLanguages).asFileTree.matching { PatternFilterable pattern ->
         pattern.exclude "**/build", "**/.gradle", "**/*.xcworkspace", "**/*.xcodeproj", "**/repo"

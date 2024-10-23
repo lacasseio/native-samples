@@ -4,31 +4,33 @@ import org.gradle.internal.os.OperatingSystem
 import org.gradle.samples.fixtures.Samples
 import org.gradle.samples.fixtures.SwiftPmRunner
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.Assume
 import spock.lang.Requires
 import spock.lang.Unroll
+
+import static org.junit.jupiter.api.Assumptions.assumeFalse
+import static org.junit.jupiter.api.Assumptions.assumeTrue
 
 class ExecuteCppSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
     @Unroll
     def "can build C++ '#sample.name'"() {
         // TODO - remove these once documentation parsing can better understand the setup
-        Assume.assumeTrue(sample.sampleName != 'swift-package-manager-publish')
+        assumeTrue(sample.sampleName != 'swift-package-manager-publish')
 
         // CMake may not be available
         if (sample.name.contains('cmake') || sample.name == "cpp/library-with-tests") {
-            Assume.assumeTrue(cmakeAvailable())
+            assumeTrue(cmakeAvailable())
         }
 
         if (sample.name.contains('autotools')) {
-            Assume.assumeTrue(notWindows())
+            assumeTrue(notWindows())
         }
 
         if (sample.name == "cpp/windows-resources") {
-            Assume.assumeTrue(isWindows())
+            assumeTrue(isWindows())
         }
 
         // Tool chains can only be provision on Linux and macOS for C++
-        Assume.assumeFalse(sample.sampleName == 'provisionable-tool-chains' && OperatingSystem.current().windows)
+        assumeFalse(sample.sampleName == 'provisionable-tool-chains' && OperatingSystem.current().windows)
 
         given:
         sample.clean()

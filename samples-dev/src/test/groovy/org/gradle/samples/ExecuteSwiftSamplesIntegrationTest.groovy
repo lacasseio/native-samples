@@ -5,9 +5,11 @@ import org.gradle.samples.fixtures.Samples
 import org.gradle.samples.fixtures.SwiftPmRunner
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Assume
 import spock.lang.Requires
 import spock.lang.Unroll
+
+import static org.junit.jupiter.api.Assumptions.assumeFalse
+import static org.junit.jupiter.api.Assumptions.assumeTrue
 
 @Requires({ !OperatingSystem.current().windows })
 class ExecuteSwiftSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
@@ -15,16 +17,16 @@ class ExecuteSwiftSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
     @Unroll
     def "can build Swift '#sample.name'"() {
         // TODO - remove this once documentation parsing can better understand the setup
-        Assume.assumeTrue(sample.sampleName != 'swift-package-manager-publish')
+        assumeTrue(sample.sampleName != 'swift-package-manager-publish')
 
         // Tool chains can only be provision on Linux for Swift
-        Assume.assumeFalse(sample.sampleName == 'provisionable-tool-chains' && !OperatingSystem.current().linux)
+        assumeFalse(sample.sampleName == 'provisionable-tool-chains' && !OperatingSystem.current().linux)
 
         // iOS application can only build on macOS
-        Assume.assumeFalse(sample.sampleName == 'ios-application' && !OperatingSystem.current().macOsX)
+        assumeFalse(sample.sampleName == 'ios-application' && !OperatingSystem.current().macOsX)
 
         // TODO - Support tool chain selection to support Swift 3, 4 and 5
-        Assume.assumeTrue(sample.sampleName != 'swift-versions')
+        assumeTrue(sample.sampleName != 'swift-versions')
 
         // TODO - extract this from the documentation
         boolean testsBroken = sample.sampleName == 'source-dependencies' || sample.sampleName == 'dependency-on-upstream-branch'

@@ -12,7 +12,7 @@ class Samples {
     static List<NativeSample> getSamples(String... languages) {
         def result = []
         languages.collect { new File(rootSampleDir, it) }*.eachFile(FileType.DIRECTORIES) {
-            if (it.name == 'repo') {
+            if (it.name == 'repo' || it.name == 'prebuilt-repo') {
                 return
             }
 
@@ -33,7 +33,7 @@ class Samples {
 
     static File getRootSampleDir() {
         File result = new File(Samples.getProtectionDomain().getCodeSource().getLocation().getPath())
-        while (!new File(result, 'settings.gradle.kts').exists()) {
+        while (!new File(result, 'settings.gradle').exists()) {
             result = result.parentFile
         }
         return result
