@@ -7,9 +7,11 @@ plugins {
     id "groovy"
     id "idea"
     id "org.gradle.samples.generators"
+    id 'maven-publish'
 }
 
 sourceCompatibility = 1.8
+version = '1.0'
 
 repositories {
     jcenter()
@@ -804,5 +806,13 @@ task generateCppCmakeSourceDependenciesUtilityAppRepo(type: GitRepoTask) {
     change {
         tag("1.0")
         message("initial version")
+    }
+}
+
+publishing {
+    publications {
+        foo(MavenPublication) {
+            from components.samples
+        }
     }
 }

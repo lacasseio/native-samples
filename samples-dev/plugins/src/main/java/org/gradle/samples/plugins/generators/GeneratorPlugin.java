@@ -2,16 +2,33 @@ package org.gradle.samples.plugins.generators;
 
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.StringUtils;
+import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.attributes.Usage;
+import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.component.SoftwareComponentFactory;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.bundling.Zip;
+import org.gradle.internal.component.external.model.ProjectDerivedCapability;
 import org.gradle.samples.plugins.SampleGeneratorTask;
 
+import javax.inject.Inject;
 import java.util.stream.Collectors;
 
 public class GeneratorPlugin implements Plugin<Project> {
+    private final SoftwareComponentFactory softwareComponentFactory;
+
+    @Inject
+    public GeneratorPlugin(SoftwareComponentFactory softwareComponentFactory) {
+        this.softwareComponentFactory = softwareComponentFactory;
+    }
+
+
     public void apply(Project project) {
         TaskCollection<SampleGeneratorTask> generatorTasks = project.getTasks().withType(SampleGeneratorTask.class);
         TaskCollection<GitRepoTask> repoTasks = project.getTasks().withType(GitRepoTask.class);
@@ -63,6 +80,60 @@ public class GeneratorPlugin implements Plugin<Project> {
             addTasksForSample(it, project);
         });
 
+        //region Export all samples as outgoing elements
+        AdhocComponentWithVariants allSamplesComponent = softwareComponentFactory.adhoc("samples");
+
+        NamedDomainObjectProvider<Configuration> sampleBucket = project.getConfigurations().register("sample");
+        sampleBucket.configure(config -> {
+            config.setCanBeConsumed(false);
+            config.setCanBeResolved(false);
+        });
+
+        NamedDomainObjectProvider<Configuration> sampleElements = project.getConfigurations().register("sampleElements");
+        sampleElements.configure(config -> {
+            config.extendsFrom(sampleBucket.get());
+            config.setCanBeResolved(false);
+            config.setCanBeConsumed(true);
+            config.attributes(attributes -> {
+                attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sample"));
+            });
+        });
+
+        allSamplesComponent.addVariantsFromConfiguration(sampleElements.get(), __ -> {});
+
+        extension.getSamples().all(it -> {
+            TaskProvider<Zip> zipTask = project.getTasks().register("zip" + it.getName(), Zip.class);
+            zipTask.configure(task -> {
+                task.from(it.getSampleDir());
+                task.getArchiveBaseName().set(it.getName());
+                task.getArchiveVersion().set(project.getVersion().toString());
+                task.getArchiveClassifier().set(it.getName());
+            });
+
+            NamedDomainObjectProvider<Configuration> configuration = project.getConfigurations().register(it.getName() + "SampleElements");
+            configuration.configure(config -> {
+                config.setCanBeResolved(false);
+                config.setCanBeConsumed(true);
+                config.outgoing(outgoing -> {
+                    outgoing.capability(new ProjectDerivedCapability(project, it.getName()));
+                    outgoing.artifact(zipTask);
+                });
+                config.attributes(attributes -> {
+                    attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sample"));
+                });
+            });
+            allSamplesComponent.addVariantsFromConfiguration(configuration.get(), __ -> {});
+            sampleBucket.configure(config -> {
+                ModuleDependency dependency = (ModuleDependency) project.getDependencies().create(project);
+                dependency.capabilities(cc -> {
+                    cc.requireCapability(new ProjectDerivedCapability(project, it.getName()));
+                });
+                config.getDependencies().add(dependency);
+            });
+        });
+
+        project.getComponents().add(allSamplesComponent);
+        //endregion
 
         // Add a lifecycle task to generate the repositories
         project.getTasks().register("generateRepos", task -> {

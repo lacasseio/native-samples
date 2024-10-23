@@ -2,3 +2,30 @@
 plugins {
     id 'org.gradle.samples.wrapper'
 }
+
+configurations.create("sample") {
+    canBeResolved = false
+    canBeConsumed = false
+}
+
+configurations.create('allSamples') {
+    canBeConsumed = false
+    canBeResolved = true
+    extendsFrom(configurations.sample)
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "sample"))
+    }
+}
+
+dependencies {
+    sample(project(':samples-dev'))
+}
+
+tasks.register('listSamples') {
+    dependsOn(configurations.allSamples)
+    doLast {
+        configurations.allSamples.incoming.artifacts.artifacts.each { v ->
+            println v
+        }
+    }
+}
