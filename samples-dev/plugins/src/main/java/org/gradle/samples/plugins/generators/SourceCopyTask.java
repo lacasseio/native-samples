@@ -26,9 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SourceCopyTask extends DefaultTask implements SampleGeneratorTask {
-    private final DirectoryProperty sampleDir = getProject().getObjects().directoryProperty();
-    private final DirectoryProperty templatesDir = getProject().getObjects().directoryProperty();
+public abstract /*final*/ class SourceCopyTask extends DefaultTask implements SampleGeneratorTask {
     private final Map<String, TemplateTarget> projects = new LinkedHashMap<>();
 
     @TaskAction
@@ -84,14 +82,10 @@ public class SourceCopyTask extends DefaultTask implements SampleGeneratorTask {
     }
 
     @Internal
-    public DirectoryProperty getSampleDir() {
-        return sampleDir;
-    }
+    public abstract DirectoryProperty getSampleDir();
 
     @Internal
-    public DirectoryProperty getTemplatesDir() {
-        return templatesDir;
-    }
+    public abstract DirectoryProperty getTemplatesDir();
 
     @Internal
     public Map<String, TemplateTarget> getProjects() {

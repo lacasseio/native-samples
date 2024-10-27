@@ -20,15 +20,13 @@ import java.util.Set;
 /**
  * Cleans each of the generated samples listed in the samples manifest.
  */
-public class CleanSamplesTask extends DefaultTask {
+public abstract /*final*/ class CleanSamplesTask extends DefaultTask {
     private static final Set<String> NAMES = ImmutableSet.of("repo", "build", ".gradle", ".build", "Package.resolved");
     private static final Set<String> EXTENSIONS = ImmutableSet.of("xcworkspace", "xcodeproj", "vs", "sln", "vcxproj", "vcxproj.filters", "vcxproj.user");
 
-    private final RegularFileProperty manifest = getProject().getObjects().fileProperty();
-
     @TaskAction
     private void clean() throws IOException {
-        FileUtils.readLines(manifest.get().getAsFile(), Charset.defaultCharset()).forEach(item -> {
+        FileUtils.readLines(getManifest().get().getAsFile(), Charset.defaultCharset()).forEach(item -> {
             if (item.startsWith("sample=")) {
                 String path = item.substring(7);
                 File dir = getProject().file(path);
@@ -71,7 +69,5 @@ public class CleanSamplesTask extends DefaultTask {
     }
 
     @InputFile
-    public RegularFileProperty getManifest() {
-        return manifest;
-    }
+    public abstract RegularFileProperty getManifest();
 }

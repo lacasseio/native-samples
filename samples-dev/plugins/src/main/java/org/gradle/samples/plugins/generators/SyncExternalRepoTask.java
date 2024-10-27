@@ -16,26 +16,23 @@ import java.io.IOException;
 /**
  * Clones/pulls changes from external repo.
  */
-public class SyncExternalRepoTask extends DefaultTask {
-    private final Property<String> repoUrl = getProject().getObjects().property(String.class);
-    private final DirectoryProperty checkoutDirectory = getProject().getObjects().directoryProperty();
-
+public abstract /*final*/ class SyncExternalRepoTask extends DefaultTask {
     public SyncExternalRepoTask() {
         getOutputs().upToDateWhen(it -> false);
     }
 
     @TaskAction
     private void checkout() throws IOException, GitAPIException {
-        File checkoutDir = checkoutDirectory.get().getAsFile();
+        File checkoutDir = getCheckoutDirectory().get().getAsFile();
         if (new File(checkoutDir, ".git").exists()) {
-            getLogger().lifecycle("Pull " + repoUrl.get() + " into " + checkoutDir);
+            getLogger().lifecycle("Pull " + getRepoUrl().get() + " into " + checkoutDir);
             try (Git git = Git.open(checkoutDir)) {
                 git.pull().setFastForward(MergeCommand.FastForwardMode.FF_ONLY).call();
             }
         } else {
-            getLogger().lifecycle("Clone " + repoUrl.get() + " into " + checkoutDir);
+            getLogger().lifecycle("Clone " + getRepoUrl().get() + " into " + checkoutDir);
             Git git = Git.cloneRepository()
-                    .setURI(repoUrl.get())
+                    .setURI(getRepoUrl().get())
                     .setDirectory(checkoutDir)
                     .call();
             git.close();
@@ -44,12 +41,8 @@ public class SyncExternalRepoTask extends DefaultTask {
 
 
     @Input
-    public Property<String> getRepoUrl() {
-        return repoUrl;
-    }
+    public abstract Property<String> getRepoUrl();
 
     @OutputDirectory
-    public DirectoryProperty getCheckoutDirectory() {
-        return checkoutDirectory;
-    }
+    public abstract DirectoryProperty getCheckoutDirectory();
 }

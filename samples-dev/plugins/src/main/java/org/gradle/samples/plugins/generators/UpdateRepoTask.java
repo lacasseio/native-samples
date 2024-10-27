@@ -18,8 +18,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateRepoTask extends DefaultTask {
-    private final DirectoryProperty sampleDir = getProject().getObjects().directoryProperty();
+public abstract class UpdateRepoTask extends DefaultTask {
     private final List<Action<? super Changes>> changes = new ArrayList<>();
 
     @Internal
@@ -33,7 +32,7 @@ public class UpdateRepoTask extends DefaultTask {
 
     @TaskAction
     private void createRepo() throws IOException, GitAPIException {
-        File destDir = sampleDir.get().getAsFile();
+        File destDir = getSampleDir().get().getAsFile();
         File parentIgnoreFile = new File(destDir.getParentFile(), ".gitignore");
         String parentIgnore = destDir.getName() + "/\n";
         if (!parentIgnoreFile.isFile() || !FileUtils.readFileToString(parentIgnoreFile, Charset.defaultCharset()).contains(parentIgnore)) {
@@ -78,7 +77,5 @@ public class UpdateRepoTask extends DefaultTask {
     }
 
     @Internal
-    public DirectoryProperty getSampleDir() {
-        return sampleDir;
-    }
+    public abstract DirectoryProperty getSampleDir();
 }
