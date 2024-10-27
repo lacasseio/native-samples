@@ -45,12 +45,12 @@ public class CMake extends DefaultTask {
 
     @InputFiles
     public FileCollection getCMakeLists() {
-        return getProject().fileTree(projectDirectory, it -> it.include("**/CMakeLists.txt"));
+        return projectDirectory.getAsFileTree().matching(it -> it.include("**/CMakeLists.txt"));
     }
 
     @OutputFiles
     public FileCollection getCmakeFiles() {
-        return getProject().fileTree(variantDirectory, it -> it.include("**/CMakeFiles/**/*").include("**/Makefile").include("**/*.cmake"));
+        return variantDirectory.getAsFileTree().matching(it -> it.include("**/CMakeFiles/**/*").include("**/Makefile").include("**/*.cmake"));
     }
 
     @Input
