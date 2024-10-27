@@ -11,6 +11,11 @@ Each C++ sample works on macOS, Linux and Windows with GCC, Clang and Visual C++
 
 Each Swift sample works on macOS and Linux, with Swift 3 and later.
 
+## Import in IntelliJ
+
+When importing into IntelliJ there will be failures, just `Reload All Gradle Projects` until everything is green.
+During development, prefer reloading each project individually (right-click `Reload Gradle Project`).
+
 ## Deeper build insights with Build Scans
 
 You can generate [build-scans](https://gradle.com/build-scans) with these samples by running Gradle with `--scan`.  At the end of the build, you will be prompted to upload build data to [scans.gradle.com](https://scans.gradle.com/get-started).
