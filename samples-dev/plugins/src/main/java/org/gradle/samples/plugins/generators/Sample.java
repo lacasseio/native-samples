@@ -3,6 +3,7 @@ package org.gradle.samples.plugins.generators;
 import org.gradle.api.Action;
 import org.gradle.api.Named;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.samples.plugins.SampleGeneratorTask;
 
@@ -10,7 +11,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Sample implements Named {
+public abstract class Sample implements Named, ExtensionAware {
     private final String name;
     private final List<Action<SampleGeneratorTask>> sourceActions = new ArrayList<Action<SampleGeneratorTask>>();
     private final List<Action<Zip>> zipActions = new ArrayList<Action<Zip>>();

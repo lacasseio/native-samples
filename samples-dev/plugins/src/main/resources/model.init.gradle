@@ -1,0 +1,21 @@
+import groovy.json.JsonBuilder
+
+class Data {
+    String location
+    Collection<IncBuild> compositeBuilds
+    Collection<String> modules
+}
+
+class IncBuild {
+    String name
+    String location
+}
+
+gradle.rootProject {
+    tasks.register("generate") {
+        doLast {
+            def o = new Data(location: rootDir.absolutePath, compositeBuilds: project.gradle.includedBuilds.collect { new IncBuild(name: it.name, location: it.projectDir.absolutePath) }, modules: project.allprojects.collect { it.projectDir.absolutePath })
+            project.file(project.outFile).text = new JsonBuilder(o).toPrettyString()
+        }
+    }
+}

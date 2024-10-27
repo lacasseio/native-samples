@@ -1,0 +1,16 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+gradlePlugin {
+    plugins {
+        externalBuildsBase {
+            id = 'dev.nokee.samples.external-builds-base'
+            implementationClass = 'dev.nokee.samples.externalbuilds.internal.tasks.ExternalBuildsBasePlugin'
+        }
+    }
+
+    dependencies {
+        implementation 'com.google.guava:guava:27.1-jre'
+    }
+}

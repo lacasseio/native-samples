@@ -1,6 +1,7 @@
 // This root project is simply a container of sample builds
 plugins {
     id 'org.gradle.samples.wrapper'
+    id 'org.gradle.samples.idea'
 }
 
 // TODO: Move to sample plugin

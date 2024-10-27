@@ -1,0 +1,31 @@
+import groovy.json.JsonSlurper
+
+gradle.addBuildListener(new BuildAdapter() {
+	void settingsEvaluated(Settings settings) {
+		if (!ideaSyncActive) {
+			return
+		}
+
+		def dir = settings.settingsDir
+		while (dir != null) {
+			if (new File(dir, '.sampleroot').exists()) {
+				def key = dir.toPath().relativize(settings.settingsDir.toPath()).toString()
+				def name = new JsonSlurper().parse(new File(dir, '.sampleroot')).get(key);
+				if (name != null) {
+					settings.rootProject.name = name
+				}
+				break;
+			}
+			dir = dir.parentFile
+		}
+	}
+
+	private boolean isIdeaSyncActive() {
+		String value = System.getProperty('idea.sync.active')
+		if (value == null) {
+			return false
+		}
+		return Boolean.parseBoolean(value)
+	}
+})
+

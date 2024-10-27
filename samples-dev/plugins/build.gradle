@@ -3,13 +3,6 @@ plugins {
 }
 
 group = "org.gradle.samples.plugins"
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     implementation gradleApi()
@@ -17,6 +10,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'com.google.guava:guava:27.1-jre'
+    implementation project(':external-build')
 }
 
 gradlePlugin {
@@ -28,6 +22,11 @@ gradlePlugin {
         generator {
             id = 'org.gradle.samples.generators'
             implementationClass = 'org.gradle.samples.plugins.generators.GeneratorPlugin'
+        }
+
+        idea {
+            id = 'org.gradle.samples.idea'
+            implementationClass = 'org.gradle.samples.plugins.IdeaPlugin'
         }
     }
 }

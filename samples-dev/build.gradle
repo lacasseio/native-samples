@@ -8,6 +8,7 @@ plugins {
     id "idea"
     id "org.gradle.samples.generators"
     id 'maven-publish'
+    id 'org.gradle.samples.idea'
 }
 
 version = '1.0'
@@ -226,7 +227,21 @@ samples {
 
     samples.register("cpp-prebuilt-binaries") {
         sampleDir = file("../cpp/prebuilt-binaries")
-
+        tasks.named("${it.name}ExternalGradleProjectSettings") { enabled = false }
+        def sampleName = name
+        idea {
+            def assembleReleaseTask = tasks.register('cpp-library__assembleRelease', ExternalBuildTask) {
+                projectDirectory = file('../cpp/simple-library')
+                taskPath = 'assembleRelease'
+                mustRunAfter('cppSimpleLibrary')
+            }
+            def assembleDebugTask = tasks.register('cpp-library__assembleDebug', ExternalBuildTask) {
+                projectDirectory = file('../cpp/simple-library')
+                taskPath = 'assembleDebug'
+                mustRunAfter('cppSimpleLibrary')
+            }
+            tasks.named("${sampleName}ExternalGradleProjectSettings").configure { dependsOn assembleReleaseTask, assembleDebugTask }
+        }
         copySource {
             appProject(".").buildRoot()
             appProject(".").fromTemplate("cpp-app")
@@ -268,6 +283,9 @@ samples {
 
     samples.register("cpp-cmake-source-dependencies") {
         sampleDir = file("../cpp/cmake-source-dependencies")
+        idea {
+            externalProjectLocation = sampleDir.dir('app')
+        }
         copySource {
             cmakeAppProject("app").buildRoot()
             cmakeAppProject("app").fromTemplate("cpp-app-cmake-build")
@@ -321,6 +339,9 @@ samples {
 
     samples.register("cpp-branch-dependencies") {
         sampleDir = file("../cpp/dependency-on-upstream-branch")
+        idea {
+            externalProjectLocation = sampleDir.dir('app')
+        }
         copySource {
             appProject("app").buildRoot()
             appProject("app").fromTemplate("cpp-app")
@@ -502,6 +523,21 @@ samples {
 
     samples.register("swift-prebuilt-binaries") {
         sampleDir = file("../swift/prebuilt-binaries")
+        tasks.named("${it.name}ExternalGradleProjectSettings") { enabled = false }
+        def sampleName = name
+        idea {
+            def assembleReleaseTask = tasks.register('swift-simple-library__assembleRelease', ExternalBuildTask) {
+                projectDirectory = file('../swift/simple-library')
+                taskPath = 'assembleRelease'
+                mustRunAfter('swiftSimpleLibrary')
+            }
+            def assembleDebugTask = tasks.register('swift-simple-library__assembleDebug', ExternalBuildTask) {
+                projectDirectory = file('../swift/simple-library')
+                taskPath = 'assembleDebug'
+                mustRunAfter('swiftSimpleLibrary')
+            }
+            tasks.named("${sampleName}ExternalGradleProjectSettings").configure { dependsOn assembleReleaseTask, assembleDebugTask }
+        }
         copySource {
             appProject(".").buildRoot()
             appProject(".").fromTemplate("swift-app")
@@ -549,6 +585,9 @@ samples {
 
     samples.register("swift-branch-dependencies") {
         sampleDir = file("../swift/dependency-on-upstream-branch")
+        idea {
+            externalProjectLocation = sampleDir.dir('app')
+        }
         copySource {
             appProject("app").buildRoot()
             appProject("app").fromTemplate("swift-app")
@@ -619,6 +658,7 @@ samples {
 
     samples.register("swift-provisionable-tool-chains") {
         sampleDir = file("../swift/provisionable-tool-chains")
+        tasks.named("${it.name}ExternalGradleProjectSettings") { enabled = false }
         copySource {
             appProject(".").buildRoot()
             appProject(".").fromTemplate("swift-app")
