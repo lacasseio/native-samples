@@ -1,5 +1,4 @@
 import org.gradle.samples.plugins.generators.CppLibraryTemplate
-import org.gradle.samples.plugins.generators.SourceCopyTask
 import org.gradle.samples.plugins.generators.SwiftLibraryTemplate
 import org.gradle.samples.plugins.generators.GitRepoTask
 
@@ -41,15 +40,15 @@ tasks.named('test', Test) {
     }
 }
 
-task cleanMavenRepo(type: Delete) {
+tasks.register('cleanMavenRepo', Delete) {
     delete file("../cpp/repo")
 }
 
-tasks.cleanSamples {
+tasks.named('cleanSamples') {
     dependsOn cleanMavenRepo
 }
 
-tasks.clean {
+tasks.named('clean') {
     dependsOn cleanSamples, cleanMavenRepo
 }
 
@@ -684,7 +683,7 @@ samples {
     }
 }
 
-task generateMinimalCppListRepo(type: GitRepoTask) {
+tasks.register('generateMinimalCppListRepo', GitRepoTask) {
     dependsOn cppInjectedPlugins
     sampleDir = file("../cpp/injected-plugins/repos/list-library")
     change { ch ->
@@ -693,7 +692,7 @@ task generateMinimalCppListRepo(type: GitRepoTask) {
     }
 }
 
-task generateMinimalCppUtilitiesRepo(type: GitRepoTask) {
+tasks.register('generateMinimalCppUtilitiesRepo', GitRepoTask) {
     dependsOn cppInjectedPlugins
     sampleDir = file("../cpp/injected-plugins/repos/utilities-library")
     change { ch ->
@@ -702,7 +701,7 @@ task generateMinimalCppUtilitiesRepo(type: GitRepoTask) {
     }
 }
 
-task generateMinimalSwiftListRepo(type: GitRepoTask) {
+tasks.register('generateMinimalSwiftListRepo', GitRepoTask) {
     dependsOn swiftInjectedPlugins
     sampleDir = file("../swift/injected-plugins/repos/list-library")
     change { ch ->
@@ -711,7 +710,7 @@ task generateMinimalSwiftListRepo(type: GitRepoTask) {
     }
 }
 
-task generateMinimalSwiftUtilitiesRepo(type: GitRepoTask) {
+tasks.register('generateMinimalSwiftUtilitiesRepo', GitRepoTask) {
     dependsOn swiftInjectedPlugins
     sampleDir = file("../swift/injected-plugins/repos/utilities-library")
     change { ch ->
@@ -720,7 +719,7 @@ task generateMinimalSwiftUtilitiesRepo(type: GitRepoTask) {
     }
 }
 
-task generatePublishCppReleasePluginRepo(type: GitRepoTask) {
+tasks.register('generatePublishCppReleasePluginRepo', GitRepoTask) {
     dependsOn cppSwiftPackageManagerPublish
     sampleDir = file("../cpp/swift-package-manager-publish/release-plugin")
     change { ch ->
@@ -729,17 +728,17 @@ task generatePublishCppReleasePluginRepo(type: GitRepoTask) {
     }
 }
 
-task generatePublishCppListRepo(type: GitRepoTask) {
+tasks.register('generatePublishCppListRepo', GitRepoTask) {
     dependsOn cppSwiftPackageManagerPublish
     sampleDir = file("../cpp/swift-package-manager-publish/list-library")
 }
 
-task generatePublishCppUtilitiesRepo(type: GitRepoTask) {
+tasks.register('generatePublishCppUtilitiesRepo', GitRepoTask) {
     dependsOn cppSwiftPackageManagerPublish
     sampleDir = file("../cpp/swift-package-manager-publish/utilities-library")
 }
 
-task generatePublishSwiftReleasePluginRepo(type: GitRepoTask) {
+tasks.register('generatePublishSwiftReleasePluginRepo', GitRepoTask) {
     dependsOn swiftSwiftPackageManagerPublish
     sampleDir = file("../swift/swift-package-manager-publish/release-plugin")
     change { ch ->
@@ -748,17 +747,17 @@ task generatePublishSwiftReleasePluginRepo(type: GitRepoTask) {
     }
 }
 
-task generatePublishSwiftListRepo(type: GitRepoTask) {
+tasks.register('generatePublishSwiftListRepo', GitRepoTask) {
     dependsOn swiftSwiftPackageManagerPublish
     sampleDir = file("../swift/swift-package-manager-publish/list-library")
 }
 
-task generatePublishSwiftUtilitiesRepo(type: GitRepoTask) {
+tasks.register('generatePublishSwiftUtilitiesRepo', GitRepoTask) {
     dependsOn swiftSwiftPackageManagerPublish
     sampleDir = file("../swift/swift-package-manager-publish/utilities-library")
 }
 
-task generateBranchCppListRepo(type: GitRepoTask) {
+tasks.register('generateBranchCppListRepo', GitRepoTask) {
     dependsOn cppBranchDependencies
     sampleDir = file("../cpp/dependency-on-upstream-branch/list-library")
     change { ch ->
@@ -767,7 +766,7 @@ task generateBranchCppListRepo(type: GitRepoTask) {
     }
 }
 
-task generateBranchCppUtilitiesRepo(type: GitRepoTask) {
+tasks.register('generateBranchCppUtilitiesRepo', GitRepoTask) {
     dependsOn cppBranchDependencies
     sampleDir = file("../cpp/dependency-on-upstream-branch/utilities-library")
     change { ch ->
@@ -788,7 +787,7 @@ task generateBranchCppUtilitiesRepo(type: GitRepoTask) {
     }
 }
 
-task generateBranchSwiftListRepo(type: GitRepoTask) {
+tasks.register('generateBranchSwiftListRepo', GitRepoTask) {
     dependsOn swiftBranchDependencies
     sampleDir = file("../swift/dependency-on-upstream-branch/list-library")
     change { ch ->
@@ -797,7 +796,7 @@ task generateBranchSwiftListRepo(type: GitRepoTask) {
     }
 }
 
-task generateBranchSwiftUtilitiesRepo(type: GitRepoTask) {
+tasks.register('generateBranchSwiftUtilitiesRepo', GitRepoTask) {
     dependsOn swiftBranchDependencies
     sampleDir = file("../swift/dependency-on-upstream-branch/utilities-library")
     change { ch ->
@@ -818,7 +817,7 @@ task generateBranchSwiftUtilitiesRepo(type: GitRepoTask) {
     }
 }
 
-task generateCppCmakeSourceDependenciesPluginRepo(type: GitRepoTask) {
+tasks.register('generateCppCmakeSourceDependenciesPluginRepo', GitRepoTask) {
     dependsOn cppCmakeSourceDependencies
     sampleDir = file("../cpp/cmake-source-dependencies/build-wrapper-plugin")
     change {
@@ -827,7 +826,7 @@ task generateCppCmakeSourceDependenciesPluginRepo(type: GitRepoTask) {
     }
 }
 
-task generateCppCmakeSourceDependenciesListLibraryRepo(type: GitRepoTask) {
+tasks.register('generateCppCmakeSourceDependenciesListLibraryRepo', GitRepoTask) {
     dependsOn cppCmakeSourceDependencies
     sampleDir = file("../cpp/cmake-source-dependencies/list")
     change {
@@ -836,7 +835,7 @@ task generateCppCmakeSourceDependenciesListLibraryRepo(type: GitRepoTask) {
     }
 }
 
-task generateCppCmakeSourceDependenciesUtilityLibraryRepo(type: GitRepoTask) {
+tasks.register('generateCppCmakeSourceDependenciesUtilityLibraryRepo', GitRepoTask) {
     dependsOn cppCmakeSourceDependencies
     sampleDir = file("../cpp/cmake-source-dependencies/utilities")
     change {
@@ -845,7 +844,7 @@ task generateCppCmakeSourceDependenciesUtilityLibraryRepo(type: GitRepoTask) {
     }
 }
 
-task generateCppCmakeSourceDependenciesUtilityAppRepo(type: GitRepoTask) {
+tasks.register('generateCppCmakeSourceDependenciesUtilityAppRepo', GitRepoTask) {
     dependsOn cppCmakeSourceDependencies
     sampleDir = file("../cpp/cmake-source-dependencies/app")
     change {
