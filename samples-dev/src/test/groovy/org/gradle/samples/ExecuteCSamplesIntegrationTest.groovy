@@ -15,16 +15,19 @@ class ExecuteCSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("build")
+                .with(wrapperGradleVersion())
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("xcode")
+                .with(wrapperGradleVersion())
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("assembleRelease")
+                .with(wrapperGradleVersion())
                 .build()
 
         where:

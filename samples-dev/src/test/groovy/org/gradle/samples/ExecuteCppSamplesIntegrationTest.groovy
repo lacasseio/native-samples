@@ -40,16 +40,19 @@ class ExecuteCppSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("build")
+                .with(wrapperGradleVersion())
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("xcode")
+                .with(wrapperGradleVersion())
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("assembleRelease")
+                .with(wrapperGradleVersion())
                 .build()
 
         where:
@@ -66,11 +69,13 @@ class ExecuteCppSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         GradleRunner.create()
                 .withProjectDir(sample.sampleDir.parentFile.parentFile)
                 .withArguments("generateRepos")
+                .with(wrapperGradleVersion())
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(new File(sample.sampleDir, "list-library"))
                 .withArguments("build", "release")
+                .with(wrapperGradleVersion())
                 .build()
 
         SwiftPmRunner.create()
@@ -81,6 +86,7 @@ class ExecuteCppSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         GradleRunner.create()
                 .withProjectDir(new File(sample.sampleDir, "utilities-library"))
                 .withArguments("build", "release")
+                .with(wrapperGradleVersion())
                 .build()
 
         SwiftPmRunner.create()

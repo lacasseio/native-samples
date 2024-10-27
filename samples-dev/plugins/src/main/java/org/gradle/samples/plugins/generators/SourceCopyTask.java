@@ -129,22 +129,6 @@ public abstract /*final*/ class SourceCopyTask extends DefaultTask implements Sa
          * Visits each src, dest directory pair for this project.
          */
         private void visitDirs(final SourceBuilder builder) throws IOException {
-            if (rootDir) {
-                String relPath = builder.relativePathTo(projectDir);
-
-                Files.deleteIfExists(builder.targetFile(getProjectDir() + "/gradlew").toPath());
-                Files.deleteIfExists(builder.targetFile(getProjectDir() + "/gradlew.bat").toPath());
-                if (builder.targetFile(getProjectDir() + "/gradle/").isDirectory()) {
-                    FileUtils.deleteDirectory(builder.targetFile(getProjectDir() + "/gradle/"));
-                } else {
-                    Files.deleteIfExists(builder.targetFile(getProjectDir() + "/gradle/").toPath());
-                }
-
-                Files.createSymbolicLink(builder.targetFile(getProjectDir() + "/gradlew").toPath(), Paths.get(relPath + "/gradlew"));
-                Files.createSymbolicLink(builder.targetFile(getProjectDir() + "/gradlew.bat").toPath(), Paths.get(relPath + "/gradlew.bat"));
-                Files.createSymbolicLink(builder.targetFile(getProjectDir() + "/gradle/").toPath(), Paths.get(relPath + "/gradle/"));
-            }
-
             templates.forEach(template -> {
                 builder.copyDir(template.getTemplateName(), getProjectDir(), dir -> mapDir(template, dir));
             });

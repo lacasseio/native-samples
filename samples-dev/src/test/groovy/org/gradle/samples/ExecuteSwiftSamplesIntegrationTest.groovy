@@ -39,6 +39,7 @@ class ExecuteSwiftSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         def runner = GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("build")
+                .with(wrapperGradleVersion())
         if (testsBroken) {
             def result = runner.buildAndFail()
             assert result.taskPaths(TaskOutcome.FAILED) == [":xcTest"] : "Expected tests to fail:\n${result.output}"
@@ -49,11 +50,13 @@ class ExecuteSwiftSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("xcode")
+                .with(wrapperGradleVersion())
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("assembleRelease")
+                .with(wrapperGradleVersion())
                 .build()
 
         where:
@@ -70,11 +73,13 @@ class ExecuteSwiftSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         GradleRunner.create()
                 .withProjectDir(sample.sampleDir.parentFile.parentFile)
                 .withArguments("generateRepos")
+                .with(wrapperGradleVersion())
                 .build()
 
         GradleRunner.create()
                 .withProjectDir(new File(sample.sampleDir, "list-library"))
                 .withArguments("build", "release")
+                .with(wrapperGradleVersion())
                 .build()
 
         SwiftPmRunner.create()
@@ -85,6 +90,7 @@ class ExecuteSwiftSamplesIntegrationTest extends ExecuteSamplesIntegrationTest {
         GradleRunner.create()
                 .withProjectDir(new File(sample.sampleDir, "utilities-library"))
                 .withArguments("build", "release")
+                .with(wrapperGradleVersion())
                 .build()
 
         SwiftPmRunner.create()

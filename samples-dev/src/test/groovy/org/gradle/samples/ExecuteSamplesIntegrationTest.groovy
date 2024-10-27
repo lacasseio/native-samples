@@ -12,6 +12,24 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue
 
 abstract class ExecuteSamplesIntegrationTest extends Specification {
 
+    static def wrapperGradleVersion() {
+        return { GradleRunner runner ->
+            def wrapperPropertiesFile = new File(runner.projectDir, 'gradle/wrapper/gradle-wrapper.properties')
+            if (wrapperPropertiesFile.exists()) {
+                Properties properties = new Properties()
+                wrapperPropertiesFile.withInputStream {
+                    properties.load(it)
+                }
+                def matcher = properties.distributionUrl =~ /(\d+\.\d+(\.\d+)?)/
+                if (matcher.find()) {
+                    println "Using Gradle v${matcher[0][0]}"
+                    runner = runner.withGradleVersion(matcher[0][0])
+                }
+            }
+            return runner
+        }
+    }
+
     def runSetupFor(NativeSample sample) {
         // Ensure only one test process is running the setup steps
         withFileLock {
@@ -21,6 +39,7 @@ abstract class ExecuteSamplesIntegrationTest extends Specification {
                 GradleRunner.create()
                         .withProjectDir(sample.workingDir)
                         .withArguments((command.split().drop(1) as List) + ["-S"])
+                        .with(wrapperGradleVersion())
                         .build()
             }
         }
@@ -76,6 +95,7 @@ abstract class ExecuteSamplesIntegrationTest extends Specification {
         GradleRunner.create()
                 .withProjectDir(sample.workingDir)
                 .withArguments("help")
+                .with(wrapperGradleVersion())
                 .build()
 
         where:
