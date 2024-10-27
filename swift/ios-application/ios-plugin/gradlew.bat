@@ -1,2 +1,1 @@
-@echo off
-call ..\..\..\gradlew.bat %*
+../../../gradlew.bat

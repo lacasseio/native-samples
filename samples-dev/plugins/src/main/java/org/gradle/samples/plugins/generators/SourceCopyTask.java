@@ -14,6 +14,8 @@ import org.gradle.samples.plugins.SampleGeneratorTask;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -135,13 +137,18 @@ public class SourceCopyTask extends DefaultTask implements SampleGeneratorTask {
         private void visitDirs(final SourceBuilder builder) throws IOException {
             if (rootDir) {
                 String relPath = builder.relativePathTo(projectDir);
-                String bashContent = FileUtils.readFileToString(builder.getTemplateFile("build-root/gradlew"), Charset.defaultCharset());
-                bashContent = bashContent.replace("REL_PATH", relPath);
-                File bashFile = builder.writeTargetFile(getProjectDir() + "/gradlew", bashContent);
-                bashFile.setExecutable(true);
-                String batContent = FileUtils.readFileToString(builder.getTemplateFile("build-root/gradlew.bat"), Charset.defaultCharset());
-                batContent = batContent.replace("REL_PATH", relPath.replace("/", "\\"));
-                builder.writeTargetFile(getProjectDir() + "/gradlew.bat", batContent);
+
+                Files.deleteIfExists(builder.targetFile(getProjectDir() + "/gradlew").toPath());
+                Files.deleteIfExists(builder.targetFile(getProjectDir() + "/gradlew.bat").toPath());
+                if (builder.targetFile(getProjectDir() + "/gradle/").isDirectory()) {
+                    FileUtils.deleteDirectory(builder.targetFile(getProjectDir() + "/gradle/"));
+                } else {
+                    Files.deleteIfExists(builder.targetFile(getProjectDir() + "/gradle/").toPath());
+                }
+
+                Files.createSymbolicLink(builder.targetFile(getProjectDir() + "/gradlew").toPath(), Paths.get(relPath + "/gradlew"));
+                Files.createSymbolicLink(builder.targetFile(getProjectDir() + "/gradlew.bat").toPath(), Paths.get(relPath + "/gradlew.bat"));
+                Files.createSymbolicLink(builder.targetFile(getProjectDir() + "/gradle/").toPath(), Paths.get(relPath + "/gradle/"));
             }
 
             templates.forEach(template -> {
