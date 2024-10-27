@@ -13,7 +13,7 @@ def downloadAndExtractCurl = tasks.register("downloadAndExtractCurl", DownloadZi
 
     ext.headerDir = project.objects.directoryProperty()
     outputs.dir(headerDir)
-    headerDir.set outputDirectory.dir("curl-source/curl-${curlVersion}/include")
+    headerDir.set outputDirectory.dir("curl-${curlVersion}/include")
 
     ext.sourceBase = project.objects.directoryProperty()
     outputs.dir(sourceBase)
