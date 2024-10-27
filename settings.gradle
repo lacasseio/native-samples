@@ -1,7 +1,9 @@
-import org.gradle.api.initialization.resolve.RepositoriesMode
-
 pluginManagement {
     includeBuild 'samples-dev/plugins'
+}
+
+plugins {
+    id 'com.gradle.develocity' version '3.18.1'
 }
 
 include("samples-dev")
@@ -17,5 +19,12 @@ dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.PREFER_SETTINGS
     repositories {
         mavenCentral()
+    }
+}
+
+develocity {
+    buildScan {
+        termsOfUseUrl.set("https://gradle.com/help/legal-terms-of-use")
+        termsOfUseAgree.set("yes")
     }
 }
