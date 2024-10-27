@@ -1,2 +1,3 @@
 includeBuild 'list-library'
+includeBuild 'release-plugin'
 includeBuild 'utilities-library'
