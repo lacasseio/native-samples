@@ -1,13 +1,7 @@
 import org.gradle.api.initialization.resolve.RepositoriesMode
 
 pluginManagement {
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id.startsWith("org.gradle.samples.")) {
-                useModule("org.gradle.samples.plugins:plugins:1.0")
-            }
-        }
-    }
+    includeBuild 'samples-dev/plugins'
 }
 
 include("samples-dev")
