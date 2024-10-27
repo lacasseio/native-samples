@@ -1,3 +1,5 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
 pluginManagement {
     resolutionStrategy {
         eachPlugin {
@@ -16,3 +18,10 @@ includeBuild("samples-dev/src/templates/build-wrapper-plugin")
 includeBuild("samples-dev/src/templates/release-plugin")
 
 rootProject.name = 'native-samples'
+
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.PREFER_SETTINGS
+    repositories {
+        mavenCentral()
+    }
+}
