@@ -1,4 +1,4 @@
-package dev.nokee.samples.externalbuilds.internal.tasks;
+package dev.nokee.samples.externalbuilds;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static dev.nokee.samples.externalbuilds.internal.tasks.ParameterizedTask.type;
+import static dev.nokee.samples.externalbuilds.ParameterizedTask.type;
 
 interface ModelCacheAwareTask<P extends ModelCacheAwareTask.Parameters> extends ParameterizedTask<P> {
     interface Parameters extends ParameterizedTask.Parameters {

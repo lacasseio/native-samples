@@ -1,4 +1,4 @@
-package dev.nokee.samples.externalbuilds.internal.tasks;
+package dev.nokee.samples.externalbuilds;
 
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;

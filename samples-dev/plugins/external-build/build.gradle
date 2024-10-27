@@ -6,7 +6,7 @@ gradlePlugin {
     plugins {
         externalBuildsBase {
             id = 'dev.nokee.samples.external-builds-base'
-            implementationClass = 'dev.nokee.samples.externalbuilds.internal.tasks.ExternalBuildsBasePlugin'
+            implementationClass = 'dev.nokee.samples.externalbuilds.ExternalBuildsBasePlugin'
         }
     }
 

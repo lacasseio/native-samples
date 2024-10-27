@@ -1,4 +1,4 @@
-package dev.nokee.samples.externalbuilds.internal.tasks;
+package dev.nokee.samples.externalbuilds;
 
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
@@ -12,7 +12,7 @@ import org.gradle.workers.WorkerExecutor;
 
 import javax.inject.Inject;
 
-import static dev.nokee.samples.externalbuilds.internal.tasks.NeverUpToDateTaskSpec.never_alwaysExecute;
+import static dev.nokee.samples.externalbuilds.NeverUpToDateTaskSpec.never_alwaysExecute;
 
 /*private*/ abstract /*final*/ class CrossProjectTask extends ParameterizedTask.UsingWorker<CrossProjectTask.Parameters> implements MaxParallelGradleTask, LimitConcurrentBuildTask, GradleVersionAwareParameterTask<CrossProjectTask.Parameters>, GradleToolingTask<CrossProjectTask.Parameters>, ExternalBuildTask {
         @Inject

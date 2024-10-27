@@ -1,7 +1,7 @@
 package org.gradle.samples.plugins;
 
 import com.google.common.base.CaseFormat;
-import dev.nokee.samples.externalbuilds.internal.tasks.ExternalBuildTask;
+import dev.nokee.samples.externalbuilds.ExternalBuildTask;
 import groovy.json.JsonBuilder;
 import groovy.json.JsonSlurper;
 import org.gradle.api.Action;

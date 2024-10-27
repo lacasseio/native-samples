@@ -1,4 +1,4 @@
-package dev.nokee.samples.externalbuilds.internal.tasks;
+package dev.nokee.samples.externalbuilds;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
