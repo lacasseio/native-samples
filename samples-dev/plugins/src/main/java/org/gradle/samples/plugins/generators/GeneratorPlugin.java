@@ -104,7 +104,13 @@ public class GeneratorPlugin implements Plugin<Project> {
         extension.getSamples().all(it -> {
             TaskProvider<Zip> zipTask = project.getTasks().register("zip" + it.getName(), Zip.class);
             zipTask.configure(task -> {
+                // TODO: depends on respective generateSource && generateRepos
                 task.from(it.getSampleDir());
+
+                task.exclude("**/.build/**", "**/.gradle/**", "**/build/**");
+                task.exclude("**/*.xcodeproj", "**/*.xcworkspace");
+                task.exclude("**/.vs/**", "**/*.sln", "**/*.vcxproj", "**/*.vcxproj.filters", "**/*.vcxproj.user");
+
                 task.getArchiveBaseName().set(it.getName());
                 task.getArchiveVersion().set(project.getVersion().toString());
                 task.getArchiveClassifier().set(it.getName());
