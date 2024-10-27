@@ -12,12 +12,12 @@ application {
 }
 
 // Code generation implementation could be in another plugin or buildSrc
-class CodeGenerator extends DefaultTask {
+abstract /*final*/ class CodeGenerator extends DefaultTask {
     @OutputDirectory
-    DirectoryProperty generatedDir = project.objects.directoryProperty()
+    abstract DirectoryProperty getGeneratedDir()
 
     @TaskAction
-    public void generate() {
+    private void generate() {
         generateSources(generatedDir.getAsFile().get())
     }
 
