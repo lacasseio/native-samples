@@ -3,6 +3,7 @@ plugins {
     id 'org.gradle.samples.wrapper'
 }
 
+// TODO: Move to sample plugin
 configurations.create("sample") {
     canBeResolved = false
     canBeConsumed = false
