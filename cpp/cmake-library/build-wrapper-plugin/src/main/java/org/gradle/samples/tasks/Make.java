@@ -7,6 +7,7 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputDirectory;
@@ -87,6 +88,7 @@ public class Make extends DefaultTask {
         return binary;
     }
 
+    @Input
     public final ListProperty<String> getArguments() {
         return arguments;
     }
