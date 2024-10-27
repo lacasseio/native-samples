@@ -8,6 +8,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.file.RelativePath;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
@@ -45,7 +46,7 @@ public abstract class UpdateRepoTask extends DefaultTask {
         try (Git git = init.setDirectory(destDir).call()) {
             FileUtils.write(new File(destDir, ".gitignore"), "\n/.gradle\nbuild\n/.build\n", Charset.defaultCharset());
             List<RelativePath> files = new ArrayList<>();
-            getProject().fileTree(destDir).visit( f -> {
+            ((FileTree) getProject().fileTree(destDir).exclude(".gradle/**", "build/**", ".build/**")).visit(f -> {
                 if (f.getFile().isFile()) {
                     files.add(f.getRelativePath());
                 }
