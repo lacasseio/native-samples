@@ -4,6 +4,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
@@ -68,6 +69,7 @@ public class GeneratePublicMacrosManifest extends DefaultTask {
             return value;
         }
 
+        @Internal
         @Override
         public String getAsFlag() {
             return "-D" + toString();
