@@ -121,6 +121,12 @@ public class GeneratorPlugin implements Plugin<Project> {
                     task.from(project.getTasks().named(RenderPlainReadMeTask.taskName(sample)));
                 }
             });
+
+            project.getTasks().withType(Zip.class).configureEach(task -> {
+                if (task.getName().equals("zip" + sample.getName() + "Sample")) {
+                    task.from(readme.getLocation());
+                }
+            });
         });
         //endregion
 
@@ -134,10 +140,16 @@ public class GeneratorPlugin implements Plugin<Project> {
                 }
             }));
 
-            project.getTasks().register(sample.getName() + "Manifest", WriteSampleManifestTask.class, task -> {
+            TaskProvider<WriteSampleManifestTask> sampleManifestTask = project.getTasks().register(sample.getName() + "Manifest", WriteSampleManifestTask.class, task -> {
                 task.getElements().put("title", sample.getTitle());
                 task.getElements().put("name", sample.getName());
                 task.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "manifest.json")));
+            });
+
+            project.getTasks().withType(Zip.class).configureEach(task -> {
+                if (task.getName().equals("zip" + sample.getName() + "Sample")) {
+                    task.from(sampleManifestTask);
+                }
             });
         });
         //endregion
@@ -175,7 +187,15 @@ public class GeneratorPlugin implements Plugin<Project> {
 
                 task.getArchiveBaseName().set(sample.getName());
                 task.getArchiveVersion().set(project.getVersion().toString());
-                task.getArchiveClassifier().set(sample.getName());
+                task.getArchiveClassifier().set("groovy-dsl");
+            });
+
+            TaskProvider<Zip> zipSampleTask = project.getTasks().register("zip" + sample.getName() + "Sample", Zip.class);
+            zipSampleTask.configure(task -> {
+                task.from(zipTask);
+
+                task.getArchiveBaseName().set(sample.getName());
+                task.getArchiveVersion().set(project.getVersion().toString());
             });
 
             NamedDomainObjectProvider<Configuration> configuration = project.getConfigurations().register(sample.getName() + "SampleElements");
@@ -184,7 +204,7 @@ public class GeneratorPlugin implements Plugin<Project> {
                 config.setCanBeConsumed(true);
                 config.outgoing(outgoing -> {
                     outgoing.capability(new ProjectDerivedCapability(project, sample.getName()));
-                    outgoing.artifact(zipTask);
+                    outgoing.artifact(zipSampleTask);
                 });
                 config.attributes(attributes -> {
                     attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sample"));
