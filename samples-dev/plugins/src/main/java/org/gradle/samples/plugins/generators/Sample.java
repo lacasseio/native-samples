@@ -3,7 +3,9 @@ package org.gradle.samples.plugins.generators;
 import org.gradle.api.Action;
 import org.gradle.api.Named;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionAware;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.samples.plugins.SampleGeneratorTask;
 
@@ -27,6 +29,8 @@ public abstract class Sample implements Named, ExtensionAware {
     }
 
     public abstract DirectoryProperty getSampleDir();
+
+    public abstract Property<String> getTitle();
 
     public void copySource(Action<SampleGeneratorTask> action) {
         sourceActions.add(action);

@@ -1,7 +1,9 @@
 package org.gradle.samples.plugins.generators;
 
 import com.google.common.base.CaseFormat;
+import groovy.json.JsonBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -11,13 +13,27 @@ import org.gradle.api.artifacts.ModuleDependency;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.component.SoftwareComponentFactory;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.MapProperty;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.component.external.model.ProjectDerivedCapability;
+import org.gradle.process.ExecOperations;
 import org.gradle.samples.plugins.SampleGeneratorTask;
+import org.gradle.workers.WorkAction;
+import org.gradle.workers.WorkParameters;
+import org.gradle.workers.WorkerExecutor;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 public class GeneratorPlugin implements Plugin<Project> {
@@ -80,6 +96,52 @@ public class GeneratorPlugin implements Plugin<Project> {
             addTasksForSample(it, project);
         });
 
+        //region README
+        extension.getSamples().configureEach(sample -> {
+            ReadMeExtension readme = sample.getExtensions().create("readme", ReadMeExtension.class);
+            readme.getLocation().convention(sample.getSampleDir().map(it -> {
+                if (it.file("README.md").getAsFile().exists()) {
+                    return it.file("README.md");
+                } else if (it.file("README.adoc").getAsFile().exists()) {
+                    return it.file("README.adoc");
+                }
+                return null;
+            }));
+
+            project.getTasks().register(RenderPlainReadMeTask.taskName(sample), RenderPlainReadMeTask.class, task -> {
+                task.parameters(parameters -> {
+                    parameters.getInputFile().set(readme.getLocation());
+                    parameters.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "README")));
+                });
+            });
+
+            project.getTasks().withType(Zip.class).configureEach(task -> {
+                if (task.getName().equals("zip" + sample.getName())) {
+                    task.exclude(it -> it.getFile().equals(readme.getLocation().getAsFile().get()));
+                    task.from(project.getTasks().named(RenderPlainReadMeTask.taskName(sample)));
+                }
+            });
+        });
+        //endregion
+
+        //region Summary/Manifest
+        extension.getSamples().configureEach(sample -> {
+            sample.getTitle().convention(project.provider(() -> sample.getExtensions().findByType(ReadMeExtension.class)).flatMap(ReadMeExtension::getLocation).map(it -> {
+                try {
+                    return Files.readAllLines(it.getAsFile().toPath()).stream().map(String::trim).filter(s -> s.startsWith("# ")).findFirst().map(s -> s.substring(2)).orElse(null);
+                } catch (IOException e) {
+                    return null;
+                }
+            }));
+
+            project.getTasks().register(sample.getName() + "Manifest", WriteSampleManifestTask.class, task -> {
+                task.getElements().put("title", sample.getTitle());
+                task.getElements().put("name", sample.getName());
+                task.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "manifest.json")));
+            });
+        });
+        //endregion
+
         //region Export all samples as outgoing elements
         AdhocComponentWithVariants allSamplesComponent = softwareComponentFactory.adhoc("samples");
 
@@ -101,27 +163,27 @@ public class GeneratorPlugin implements Plugin<Project> {
 
         allSamplesComponent.addVariantsFromConfiguration(sampleElements.get(), __ -> {});
 
-        extension.getSamples().all(it -> {
-            TaskProvider<Zip> zipTask = project.getTasks().register("zip" + it.getName(), Zip.class);
+        extension.getSamples().all(sample -> {
+            TaskProvider<Zip> zipTask = project.getTasks().register("zip" + sample.getName(), Zip.class);
             zipTask.configure(task -> {
                 // TODO: depends on respective generateSource && generateRepos
-                task.from(it.getSampleDir());
+                task.from(sample.getSampleDir());
 
                 task.exclude("**/.build/**", "**/.gradle/**", "**/build/**");
                 task.exclude("**/*.xcodeproj", "**/*.xcworkspace");
                 task.exclude("**/.vs/**", "**/*.sln", "**/*.vcxproj", "**/*.vcxproj.filters", "**/*.vcxproj.user");
 
-                task.getArchiveBaseName().set(it.getName());
+                task.getArchiveBaseName().set(sample.getName());
                 task.getArchiveVersion().set(project.getVersion().toString());
-                task.getArchiveClassifier().set(it.getName());
+                task.getArchiveClassifier().set(sample.getName());
             });
 
-            NamedDomainObjectProvider<Configuration> configuration = project.getConfigurations().register(it.getName() + "SampleElements");
+            NamedDomainObjectProvider<Configuration> configuration = project.getConfigurations().register(sample.getName() + "SampleElements");
             configuration.configure(config -> {
                 config.setCanBeResolved(false);
                 config.setCanBeConsumed(true);
                 config.outgoing(outgoing -> {
-                    outgoing.capability(new ProjectDerivedCapability(project, it.getName()));
+                    outgoing.capability(new ProjectDerivedCapability(project, sample.getName()));
                     outgoing.artifact(zipTask);
                 });
                 config.attributes(attributes -> {
@@ -132,7 +194,7 @@ public class GeneratorPlugin implements Plugin<Project> {
             sampleBucket.configure(config -> {
                 ModuleDependency dependency = (ModuleDependency) project.getDependencies().create(project);
                 dependency.capabilities(cc -> {
-                    cc.requireCapability(new ProjectDerivedCapability(project, it.getName()));
+                    cc.requireCapability(new ProjectDerivedCapability(project, sample.getName()));
                 });
                 config.getDependencies().add(dependency);
             });
@@ -181,5 +243,58 @@ public class GeneratorPlugin implements Plugin<Project> {
             task.getSampleDir().set(sample.getSampleDir());
             sample.getSourceActions().forEach( it -> it.execute(task));
         });
+    }
+
+    /*private*/ static abstract /*final*/ class WriteSampleManifestTask extends DefaultTask {
+        @Inject
+        public WriteSampleManifestTask() {}
+
+        @Input
+        public abstract MapProperty<String, String> getElements();
+
+        @OutputFile
+        public abstract RegularFileProperty getOutputFile();
+
+        @TaskAction
+        private void doWrite() throws IOException {
+            try (PrintWriter out = new PrintWriter(getOutputFile().get().getAsFile())) {
+                new JsonBuilder(getElements().get()).writeTo(out);
+            }
+        }
+    }
+
+    /*private*/ static abstract /*final*/ class RenderPlainReadMeTask extends ParameterizedTask.UsingWorker<RenderPlainReadMeTask.Parameters> {
+        public interface Parameters extends ParameterizedTask.Parameters, WorkParameters, ParameterizedTask.UsingWorker.CopyTo<Parameters> {
+            @InputFile
+            public abstract RegularFileProperty getInputFile();
+
+            @OutputFile
+            public abstract RegularFileProperty getOutputFile();
+        }
+
+        @Inject
+        public RenderPlainReadMeTask(WorkerExecutor executor) {
+            super(TaskWorkAction.class, executor::noIsolation);
+        }
+
+        public static String taskName(Sample sample) {
+            return sample.getName() + "PlainReadMe";
+        }
+
+        /*private*/ static abstract /*final*/ class TaskWorkAction implements WorkAction<RenderPlainReadMeTask.Parameters> {
+            private final ExecOperations execOperations;
+
+            @Inject
+            public TaskWorkAction(ExecOperations execOperations) {
+                this.execOperations = execOperations;
+            }
+
+            @Override
+            public void execute() {
+                execOperations.exec(spec -> {
+                    spec.commandLine("pandoc", "-t", "plain", "-o", getParameters().getOutputFile().getAsFile().get(), getParameters().getInputFile().getAsFile().get());
+                });
+            }
+        }
     }
 }
