@@ -10,6 +10,11 @@ configurations.create("sample") {
     canBeConsumed = false
 }
 
+dependencies {
+    sample(project(':samples-dev'))
+}
+
+//region Consume all samples
 configurations.create('allSamples') {
     canBeConsumed = false
     canBeResolved = true
@@ -17,10 +22,6 @@ configurations.create('allSamples') {
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "sample"))
     }
-}
-
-dependencies {
-    sample(project(':samples-dev'))
 }
 
 tasks.register('listSamples') {
@@ -31,3 +32,4 @@ tasks.register('listSamples') {
         }
     }
 }
+//endregion

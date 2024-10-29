@@ -851,7 +851,7 @@ tasks.register('generateCppCmakeSourceDependenciesUtilityAppRepo', GitRepoTask) 
 
 publishing {
     publications {
-        foo(MavenPublication) {
+        nativeSamples(MavenPublication) {
             from components.samples
         }
     }
