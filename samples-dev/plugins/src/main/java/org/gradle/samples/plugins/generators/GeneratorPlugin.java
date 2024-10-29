@@ -4,12 +4,14 @@ import com.google.common.base.CaseFormat;
 import groovy.json.JsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.component.SoftwareComponentFactory;
@@ -18,6 +20,7 @@ import org.gradle.api.provider.MapProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskProvider;
@@ -34,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class GeneratorPlugin implements Plugin<Project> {
@@ -50,7 +54,9 @@ public class GeneratorPlugin implements Plugin<Project> {
         TaskCollection<GitRepoTask> repoTasks = project.getTasks().withType(GitRepoTask.class);
 
         // Add project extension
-        SamplesExtension extension = project.getExtensions().create("samples", SamplesExtension.class, project);
+        SamplesExtension extension = project.getExtensions().create("samples", SamplesExtension.class, project, (NamedDomainObjectFactory<Sample>) name -> {
+            return project.getObjects().newInstance(Sample.class, name, project.getTasks().register(name + "Manifest", WriteSampleManifestTask.class), project.getTasks().register("sync" + name + "Sample", Sync.class));
+        });
 
         // Add a task to generate the list of samples
         TaskProvider<SamplesManifestTask> manifestTask = project.getTasks().register("samplesManifest", SamplesManifestTask.class, task -> {
@@ -122,15 +128,18 @@ public class GeneratorPlugin implements Plugin<Project> {
                 }
             });
 
-            project.getTasks().withType(Zip.class).configureEach(task -> {
-                if (task.getName().equals("zip" + sample.getName() + "Sample")) {
-                    task.from(readme.getLocation());
-                }
-            });
+            sample.content(spec -> spec.from(readme.getLocation()));
         });
         //endregion
 
         //region Summary/Manifest
+        // TODO: This should be modeled as summary which adds to the manifest (this is a different capability)
+        //   Summary:
+        //    - title
+        //    - description
+        //    - version
+        //    - author
+        //    - tags
         extension.getSamples().configureEach(sample -> {
             sample.getTitle().convention(project.provider(() -> sample.getExtensions().findByType(ReadMeExtension.class)).flatMap(ReadMeExtension::getLocation).map(it -> {
                 try {
@@ -140,19 +149,21 @@ public class GeneratorPlugin implements Plugin<Project> {
                 }
             }));
 
-            TaskProvider<WriteSampleManifestTask> sampleManifestTask = project.getTasks().register(sample.getName() + "Manifest", WriteSampleManifestTask.class, task -> {
+            sample.getManifestTask().configure(t -> {
+                WriteSampleManifestTask task = (WriteSampleManifestTask) t;
                 task.getElements().put("title", sample.getTitle());
                 task.getElements().put("name", sample.getName());
+                task.getElements().put("variants", project.provider(() -> Arrays.asList(project.getTasks().named("zip" + sample.getName(), Zip.class).get().getArchiveFileName().get())));
                 task.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "manifest.json")));
             });
 
-            project.getTasks().withType(Zip.class).configureEach(task -> {
-                if (task.getName().equals("zip" + sample.getName() + "Sample")) {
-                    task.from(sampleManifestTask);
-                }
-            });
+            sample.content(spec -> spec.from(sample.getManifestTask()));
         });
         //endregion
+
+        // TODO: OG meta
+        // TODO: HTML meta
+        // TODO: Twitter meta
 
         //region Export all samples as outgoing elements
         AdhocComponentWithVariants allSamplesComponent = softwareComponentFactory.adhoc("samples");
@@ -170,6 +181,7 @@ public class GeneratorPlugin implements Plugin<Project> {
             config.setCanBeConsumed(true);
             config.attributes(attributes -> {
                 attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sample"));
+                attributes.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, "documentation"));
             });
         });
 
@@ -190,12 +202,21 @@ public class GeneratorPlugin implements Plugin<Project> {
                 task.getArchiveClassifier().set("groovy-dsl");
             });
 
+            //region Export sample content
+            sample.content(spec -> {
+                spec.from(zipTask);
+            });
+
+            sample.getContentTask().configure(task -> {
+                task.setDestinationDir(project.file(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "out"))));
+            });
+
             TaskProvider<Zip> zipSampleTask = project.getTasks().register("zip" + sample.getName() + "Sample", Zip.class);
             zipSampleTask.configure(task -> {
-                task.from(zipTask);
-
+                task.from(sample.getContentTask());
                 task.getArchiveBaseName().set(sample.getName());
                 task.getArchiveVersion().set(project.getVersion().toString());
+                task.getArchiveExtension().set("sample");
             });
 
             NamedDomainObjectProvider<Configuration> configuration = project.getConfigurations().register(sample.getName() + "SampleElements");
@@ -205,9 +226,15 @@ public class GeneratorPlugin implements Plugin<Project> {
                 config.outgoing(outgoing -> {
                     outgoing.capability(new ProjectDerivedCapability(project, sample.getName()));
                     outgoing.artifact(zipSampleTask);
+                    outgoing.variants(variants -> {
+                        variants.create("sample-directory", it -> {
+                            it.artifact(sample.getContentTask(), spec -> spec.setType("sample-directory"));
+                        });
+                    });
                 });
                 config.attributes(attributes -> {
                     attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sample"));
+                    attributes.attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, "documentation"));
                 });
             });
             allSamplesComponent.addVariantsFromConfiguration(configuration.get(), __ -> {});
@@ -218,6 +245,7 @@ public class GeneratorPlugin implements Plugin<Project> {
                 });
                 config.getDependencies().add(dependency);
             });
+            //endregion
         });
 
         project.getComponents().add(allSamplesComponent);
@@ -270,7 +298,7 @@ public class GeneratorPlugin implements Plugin<Project> {
         public WriteSampleManifestTask() {}
 
         @Input
-        public abstract MapProperty<String, String> getElements();
+        public abstract MapProperty<String, Object> getElements();
 
         @OutputFile
         public abstract RegularFileProperty getOutputFile();

@@ -1,19 +1,18 @@
 package org.gradle.samples.plugins.generators;
 
 import org.gradle.api.NamedDomainObjectContainer;
+import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.Project;
 
 public class SamplesExtension {
     private final NamedDomainObjectContainer<ExternalRepo> externalRepos;
     private final NamedDomainObjectContainer<Sample> samples;
 
-    public SamplesExtension(Project project) {
+    public SamplesExtension(Project project, NamedDomainObjectFactory<Sample> sampleFactory) {
         externalRepos = project.container(ExternalRepo.class, name -> {
             return project.getObjects().newInstance(ExternalRepo.class, name);
         });
-        samples = project.container(Sample.class, name -> {
-            return project.getObjects().newInstance(Sample.class, name);
-        });
+        samples = project.container(Sample.class, sampleFactory);
     }
 
     public NamedDomainObjectContainer<ExternalRepo> getExternalRepos() {

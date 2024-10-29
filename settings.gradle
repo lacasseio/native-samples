@@ -1,5 +1,6 @@
 pluginManagement {
     includeBuild 'samples-dev/plugins'
+    includeBuild 'gradle/plugins/jbake-gradle-plugin'
 }
 
 plugins {

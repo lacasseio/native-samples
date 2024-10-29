@@ -1,7 +1,18 @@
+import groovy.json.JsonSlurper
+import org.gradle.api.internal.artifacts.transform.UnzipTransform
+import org.gradle.api.artifacts.transform.TransformParameters
+
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.stream.Stream
+import java.util.stream.Collectors
+import javax.inject.Inject
+
 // This root project is simply a container of sample builds
 plugins {
     id 'org.gradle.samples.wrapper'
     id 'org.gradle.samples.idea'
+    id 'net.nokeedev.jbake-site'
 }
 
 // TODO: Move to sample plugin
@@ -31,5 +42,123 @@ tasks.register('listSamples') {
             println v
         }
     }
+}
+//endregion
+
+//region Render samples using JBake
+dependencies.registerTransform(UnzipTransform.class) { spec ->
+    spec.from
+            .attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, 'sample'))
+            .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, "sample")
+    spec.to
+            .attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, 'sample'))
+            .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'sample-directory')
+}
+
+dependencies.registerTransform(JBakeAsset.class) { spec ->
+    spec.from
+            .attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, 'sample'))
+            .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'sample-directory')
+    spec.to
+            .attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, 'jbake-asset'))
+            .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'jbake-asset-directory')
+}
+
+dependencies.registerTransform(JBakeContent.class) { spec ->
+    spec.from
+            .attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, 'sample'))
+            .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'sample-directory')
+    spec.to
+            .attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, 'jbake-content'))
+            .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'jbake-content-directory')
+}
+
+/**
+ * Collect the DSL zip into a directory with sample slug
+ */
+abstract class JBakeAsset implements TransformAction<TransformParameters.None> {
+    @InputArtifact
+    abstract Provider<FileSystemLocation> getInputArtifact()
+
+    @Inject
+    abstract FileSystemOperations getFileOperations()
+
+    @Override
+    void transform(TransformOutputs outputs) {
+        def manifest = new JsonSlurper().parse(new File(inputArtifact.get().asFile, "manifest.json"))
+        File out = outputs.dir("out")
+        fileOperations.sync { spec ->
+            spec.into(out)
+            spec.from(manifest.variants.collect { new File(inputArtifact.get().asFile, it) }) {
+                into(manifest.name)
+            }
+        }
+    }
+}
+
+/**
+ * Collect READMEs as index to render.
+ * - Add jbake attributes (or override them)
+ *   (jbake-type, jbake-tags, jbake-status)
+ *   (title, date, type, tags, status)
+ */
+abstract class JBakeContent implements TransformAction<TransformParameters.None> {
+    @InputArtifact
+    abstract Provider<FileSystemLocation> getInputArtifact()
+
+    @Override
+    void transform(TransformOutputs outputs) {
+        def manifest = new JsonSlurper().parse(new File(inputArtifact.get().asFile, "manifest.json"))
+        File out = outputs.dir("out")
+
+        File dstDir = new File(out, manifest.name)
+        dstDir.mkdir()
+
+        def lines = Files.readAllLines(new File(inputArtifact.get().asFile, "README.md").toPath())
+        Files.write(new File(dstDir, "index.md").toPath(), Stream.concat(Stream.of(
+                "title=${manifest.title}",
+                "type=page",
+                "status=published",
+                // TODO: Unpack variants
+                'downloads={"items":[{"displayName": "Groovy DSL", "href": "' + manifest.variants[0] + '"}]}',
+                //og={... json ...}
+                "~~~~~~"
+        ), lines.stream()).collect(Collectors.toList()))
+    }
+}
+
+def jbakeContent = configurations.create('jbakeContent') {
+    canBeResolved = true
+    canBeConsumed = false
+    extendsFrom(configurations.sample)
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "sample"))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, "documentation"))
+    }
+}
+
+def jbakeAsset = configurations.create('jbakeAsset') {
+    canBeResolved = true
+    canBeConsumed = false
+    extendsFrom(configurations.sample)
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "sample"))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, "documentation"))
+    }
+}
+
+jbake {
+    content.from(jbakeContent.incoming.artifactView { attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "jbake-content"))
+    }}.files)
+    assets.from(jbakeAsset.incoming.artifactView { attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, "jbake-asset"))
+    }}.files)
+    templates.from('page.ftl')
+    configurations.put('render.index', false)
+    configurations.put('render.archive', false)
+    configurations.put('render.feed', false)
+    configurations.put('render.tags', false)
+    configurations.put('render.sitemap', false)
 }
 //endregion
