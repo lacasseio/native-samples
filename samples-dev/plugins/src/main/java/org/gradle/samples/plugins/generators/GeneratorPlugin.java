@@ -1,6 +1,5 @@
 package org.gradle.samples.plugins.generators;
 
-import com.google.common.base.CaseFormat;
 import groovy.json.JsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.DefaultTask;
@@ -27,7 +26,6 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.component.external.model.ProjectDerivedCapability;
 import org.gradle.process.ExecOperations;
-import org.gradle.samples.plugins.SampleGeneratorTask;
 import org.gradle.workers.WorkAction;
 import org.gradle.workers.WorkParameters;
 import org.gradle.workers.WorkerExecutor;
@@ -48,9 +46,7 @@ public class GeneratorPlugin implements Plugin<Project> {
         this.softwareComponentFactory = softwareComponentFactory;
     }
 
-
     public void apply(Project project) {
-        TaskCollection<SampleGeneratorTask> generatorTasks = project.getTasks().withType(SampleGeneratorTask.class);
         TaskCollection<GitRepoTask> repoTasks = project.getTasks().withType(GitRepoTask.class);
 
         // Add project extension
@@ -61,11 +57,6 @@ public class GeneratorPlugin implements Plugin<Project> {
         // Add a task to generate the list of samples
         TaskProvider<SamplesManifestTask> manifestTask = project.getTasks().register("samplesManifest", SamplesManifestTask.class, task -> {
             task.getManifest().set(project.file("samples-list.txt"));
-            task.getSampleDirs().set(project.provider(() -> {
-                return generatorTasks.stream().map(generator -> {
-                    return generator.getSampleDir().get().getAsFile().getAbsolutePath();
-                }).collect(Collectors.toList());
-            }));
             task.getRepoDirs().set(project.provider(() -> {
                 return repoTasks.stream().map(generator -> {
                     return generator.getSampleDir().get().getAsFile().getAbsolutePath();
@@ -81,14 +72,8 @@ public class GeneratorPlugin implements Plugin<Project> {
             }));
         });
 
-        // Apply conventions to the generator tasks
-        generatorTasks.configureEach( task -> {
-            task.getTemplatesDir().set(project.file("src/templates"));
-        });
-
         // Add a lifecycle task to generate the source files for the samples
         TaskProvider<Task> generateSource = project.getTasks().register("generateSource", task -> {
-            task.dependsOn(generatorTasks);
             task.dependsOn(manifestTask);
             task.setGroup("source generation");
             task.setDescription("generate the source files for all samples");
@@ -96,10 +81,6 @@ public class GeneratorPlugin implements Plugin<Project> {
 
         extension.getExternalRepos().all(it -> {
             addTasksForRepo(it, generateSource, project);
-        });
-
-        extension.getSamples().all(it -> {
-            addTasksForSample(it, project);
         });
 
         //region README
@@ -264,17 +245,7 @@ public class GeneratorPlugin implements Plugin<Project> {
             task.getRepoUrl().set(repo.getRepoUrl());
             task.getCheckoutDirectory().set(project.file("repos/" + repo.getName()));
         });
-        TaskProvider<SourceCopyTask> setupTask = project.getTasks().register("copy" + StringUtils.capitalize(repo.getName()), SourceCopyTask.class, task -> {
-            task.dependsOn(syncTask);
-            task.getSampleDir().set(syncTask.get().getCheckoutDirectory());
-            task.doFirst(task1 -> {
-                repo.getSourceActions().forEach(it -> {
-                    it.execute(task);
-                });
-            });
-        });
         TaskProvider<UpdateRepoTask> updateTask = project.getTasks().register("update" + StringUtils.capitalize(repo.getName()), UpdateRepoTask.class, task -> {
-            task.dependsOn(setupTask);
             task.getSampleDir().set(syncTask.get().getCheckoutDirectory());
             repo.getRepoActions().forEach(it -> {
                 task.change(it);
@@ -282,14 +253,6 @@ public class GeneratorPlugin implements Plugin<Project> {
         });
         generateSource.configure(task -> {
             task.dependsOn(updateTask);
-        });
-    }
-
-    private void addTasksForSample(Sample sample, Project project) {
-        String sampleNameCamelCase = CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, sample.getName());
-        TaskProvider<SourceCopyTask> sourceCopyTask = project.getTasks().register(sampleNameCamelCase, SourceCopyTask.class, task -> {
-            task.getSampleDir().set(sample.getSampleDir());
-            sample.getSourceActions().forEach( it -> it.execute(task));
         });
     }
 

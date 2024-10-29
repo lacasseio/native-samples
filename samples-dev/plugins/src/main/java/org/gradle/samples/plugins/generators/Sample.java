@@ -5,13 +5,11 @@ import org.gradle.api.Named;
 import org.gradle.api.Task;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
-import org.gradle.samples.plugins.SampleGeneratorTask;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ public abstract class Sample implements Named, ExtensionAware {
     private final String name;
     private final TaskProvider<? extends Task> manifestTask;
     private final TaskProvider<Sync> contentTask;
-    private final List<Action<SampleGeneratorTask>> sourceActions = new ArrayList<Action<SampleGeneratorTask>>();
     private final List<Action<Zip>> zipActions = new ArrayList<Action<Zip>>();
 
     @Inject
@@ -52,16 +49,8 @@ public abstract class Sample implements Named, ExtensionAware {
         return contentTask;
     }
 
-    public void copySource(Action<SampleGeneratorTask> action) {
-        sourceActions.add(action);
-    }
-
     public void zipSource(Action<Zip> action) {
         zipActions.add(action);
-    }
-
-    public List<Action<SampleGeneratorTask>> getSourceActions() {
-        return sourceActions;
     }
 
     public List<Action<Zip>> getZipActions() {

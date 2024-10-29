@@ -9,13 +9,10 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.internal.Cast;
-import org.gradle.samples.plugins.SampleGeneratorTask;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract /*final*/ class SourceCopyTask extends DefaultTask implements SampleGeneratorTask {
+public abstract /*final*/ class SourceCopyTask extends DefaultTask {
     private final Map<String, TemplateTarget> projects = new LinkedHashMap<>();
 
     @TaskAction

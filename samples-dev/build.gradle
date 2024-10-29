@@ -8,6 +8,7 @@ plugins {
     id "org.gradle.samples.generators"
     id 'maven-publish'
     id 'org.gradle.samples.idea'
+    id 'dev.nokee.samples.copy-source'
 }
 
 version = '1.0'

@@ -3,30 +3,22 @@ package org.gradle.samples.plugins.generators;
 import com.google.common.collect.ImmutableList;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.provider.Property;
-import org.gradle.samples.plugins.SampleGeneratorTask;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExternalRepo {
+public abstract class ExternalRepo implements ExtensionAware {
     private final String name;
     private final Property<String> repoUrl;
-    private final List<Action<? super SampleGeneratorTask>> sourceActions = new ArrayList<>();
     private final List<Action<? super Changes>> repoActions = new ArrayList<>();
 
     @Inject
     public ExternalRepo(String name, ObjectFactory objectFactory) {
         this.name = name;
         repoUrl = objectFactory.property(String.class);
-    }
-
-    /**
-     * Adds an action to run to configure the source templates for this repo. The source templates are applied to the Git repo clone
-     */
-    void copySource(Action<? super SampleGeneratorTask> action) {
-        sourceActions.add(action);
     }
 
     /**
@@ -42,10 +34,6 @@ public class ExternalRepo {
 
     public String getName() {
         return name;
-    }
-
-    public List<Action<? super SampleGeneratorTask>> getSourceActions() {
-        return ImmutableList.copyOf(sourceActions);
     }
 
     public List<Action<? super Changes>> getRepoActions() {
