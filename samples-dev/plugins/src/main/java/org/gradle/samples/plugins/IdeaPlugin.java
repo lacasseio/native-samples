@@ -56,26 +56,26 @@ public abstract /*final*/ class IdeaPlugin implements Plugin<Project> {
         });
         //endregion
 
-
         //region External Project
         project.getPluginManager().withPlugin("org.gradle.samples.generators", __ -> {
-            NamedDomainObjectProvider<Configuration> ideaElements = project.getConfigurations().register("ideaElements");
-            ideaElements.configure(it -> {
-                it.setCanBeConsumed(true);
-                it.setCanBeResolved(false);
-                it.extendsFrom(project.getConfigurations().getByName("sample"));
-                it.attributes(attributes -> {
-                    attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleidea"));
+            if (isIdeaSyncActive()) {
+                NamedDomainObjectProvider<Configuration> ideaElements = project.getConfigurations().register("ideaElements");
+                ideaElements.configure(it -> {
+                    it.setCanBeConsumed(true);
+                    it.setCanBeResolved(false);
+                    it.extendsFrom(project.getConfigurations().getByName("sample"));
+                    it.attributes(attributes -> {
+                        attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleidea"));
+                    });
                 });
-            });
+            }
 
             RegularFileProperty l = project.getObjects().fileProperty().value(project.getLayout().getBuildDirectory().file("model.init.gradle").zip(project.provider(() -> {
                 return new Scanner(IdeaPlugin.class.getResourceAsStream("/model.init.gradle")).useDelimiter("\\A").next();
             }), (a, b) -> {
                 try {
                     Files.write(a.getAsFile().toPath(), b.getBytes());
-                } catch (
-                        IOException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 return a;
@@ -98,17 +98,19 @@ public abstract /*final*/ class IdeaPlugin implements Plugin<Project> {
                     task.getTaskPath().set("generate");
                 });
 
-                project.getConfigurations().register(sample.getName() + "IdeaExternalElements", config -> {
-                    config.setCanBeConsumed(true);
-                    config.setCanBeResolved(false);
-                    config.attributes(attributes -> {
-                        attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleideagradle"));
+                if (isIdeaSyncActive()) {
+                    project.getConfigurations().register(sample.getName() + "IdeaExternalElements", config -> {
+                        config.setCanBeConsumed(true);
+                        config.setCanBeResolved(false);
+                        config.attributes(attributes -> {
+                            attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleideagradle"));
+                        });
+                        config.outgoing(outgoing -> {
+                            outgoing.capability(new ProjectDerivedCapability(project, sample.getName()));
+                            outgoing.artifact(buildTask.map(it -> new File(it.getTemporaryDir(), "gradle.json")));
+                        });
                     });
-                    config.outgoing(outgoing -> {
-                        outgoing.capability(new ProjectDerivedCapability(project, sample.getName()));
-                        outgoing.artifact(buildTask.map(it -> new File(it.getTemporaryDir(), "gradle.json")));
-                    });
-                });
+                }
             });
         });
 
@@ -169,35 +171,37 @@ public abstract /*final*/ class IdeaPlugin implements Plugin<Project> {
 
         //region Override external project name
         project.getPluginManager().withPlugin("org.gradle.samples.generators", __ -> {
-            NamedDomainObjectProvider<Configuration> ideaGradleElements = project.getConfigurations().register("ideaGradleElements");
-            ideaGradleElements.configure(it -> {
-                it.setCanBeConsumed(true);
-                it.setCanBeResolved(false);
-                it.extendsFrom(project.getConfigurations().getByName("sample"));
-                it.attributes(attributes -> {
-                    attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleideagradle"));
-                });
-            });
-
-            project.getExtensions().getByType(SamplesExtension.class).getSamples().configureEach(sample -> {
-                IdeaExtension extension = sample.getExtensions().getByType(IdeaExtension.class);
-
-                project.getConfigurations().register(sample.getName() + "IdeaElements", config -> {
-                    config.setCanBeConsumed(true);
-                    config.setCanBeResolved(false);
-                    config.attributes(attributes -> {
-                        attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleidea"));
-                    });
-                    config.outgoing(outgoing -> {
-                        outgoing.capability(new ProjectDerivedCapability(project, sample.getName()));
-                        outgoing.artifact(project.getTasks().register(sample.getName() + "IdeaManifest", WriteIdeaManifestTask.class, task -> {
-                            task.getProjectName().set(extension.getName());
-                            task.getProjectDir().set(extension.getExternalProjectLocation());
-                            task.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "manifest.json")));
-                        }));
+            if (isIdeaSyncActive()) {
+                NamedDomainObjectProvider<Configuration> ideaGradleElements = project.getConfigurations().register("ideaGradleElements");
+                ideaGradleElements.configure(it -> {
+                    it.setCanBeConsumed(true);
+                    it.setCanBeResolved(false);
+                    it.extendsFrom(project.getConfigurations().getByName("sample"));
+                    it.attributes(attributes -> {
+                        attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleideagradle"));
                     });
                 });
-            });
+
+                project.getExtensions().getByType(SamplesExtension.class).getSamples().configureEach(sample -> {
+                    IdeaExtension extension = sample.getExtensions().getByType(IdeaExtension.class);
+
+                    project.getConfigurations().register(sample.getName() + "IdeaElements", config -> {
+                        config.setCanBeConsumed(true);
+                        config.setCanBeResolved(false);
+                        config.attributes(attributes -> {
+                            attributes.attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, "sampleidea"));
+                        });
+                        config.outgoing(outgoing -> {
+                            outgoing.capability(new ProjectDerivedCapability(project, sample.getName()));
+                            outgoing.artifact(project.getTasks().register(sample.getName() + "IdeaManifest", WriteIdeaManifestTask.class, task -> {
+                                task.getProjectName().set(extension.getName());
+                                task.getProjectDir().set(extension.getExternalProjectLocation());
+                                task.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "manifest.json")));
+                            }));
+                        });
+                    });
+                });
+            }
         });
 
         if (project.getParent() == null) {
@@ -251,6 +255,14 @@ public abstract /*final*/ class IdeaPlugin implements Plugin<Project> {
             });
         }
         //endregion
+    }
+
+    private boolean isIdeaSyncActive() {
+        String value = System.getProperty("idea.sync.active");
+        if (value == null) {
+            return false;
+        }
+        return Boolean.parseBoolean(value);
     }
 
     public static abstract class IdeaExtension {

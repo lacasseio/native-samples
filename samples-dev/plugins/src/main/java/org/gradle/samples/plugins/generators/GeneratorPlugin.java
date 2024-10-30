@@ -1,7 +1,6 @@
 package org.gradle.samples.plugins.generators;
 
 import org.apache.commons.lang3.StringUtils;
-import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
