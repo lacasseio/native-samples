@@ -5,7 +5,6 @@ import org.gradle.api.Named;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.plugins.ExtensionAware;
-import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
@@ -31,8 +30,6 @@ public abstract class Sample implements Named, ExtensionAware {
     }
 
     public abstract DirectoryProperty getSampleDir();
-
-    public abstract Property<String> getTitle();
 
     public void content(Action<? super CopySpec> action) {
         contentTask.configure(action);

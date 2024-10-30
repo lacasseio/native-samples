@@ -27,6 +27,10 @@ gradlePlugin {
             id = 'dev.nokee.samples.manifest'
             implementationClass = 'org.gradle.samples.plugins.generators.manifest.ManifestPlugin'
         }
+        summary {
+            id = 'dev.nokee.samples.summary'
+            implementationClass = 'org.gradle.samples.plugins.generators.summary.SummaryPlugin'
+        }
 
         idea {
             id = 'org.gradle.samples.idea'

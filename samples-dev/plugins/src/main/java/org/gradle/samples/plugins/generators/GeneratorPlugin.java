@@ -74,30 +74,13 @@ public class GeneratorPlugin implements Plugin<Project> {
 
         project.getPluginManager().apply("dev.nokee.samples.readme");
         project.getPluginManager().apply("dev.nokee.samples.manifest");
+        project.getPluginManager().apply("dev.nokee.samples.summary");
 
-        //region Summary/Manifest
-        // TODO: This should be modeled as summary which adds to the manifest (this is a different capability)
-        //   Summary:
-        //    - title
-        //    - description
-        //    - version
-        //    - author
-        //    - tags
         extension.getSamples().configureEach(sample -> {
-            sample.getTitle().convention(project.provider(() -> sample.getExtensions().findByType(ReadMeExtension.class)).flatMap(ReadMeExtension::getLocation).map(it -> {
-                try {
-                    return Files.readAllLines(it.getAsFile().toPath()).stream().map(String::trim).filter(s -> s.startsWith("# ")).findFirst().map(s -> s.substring(2)).orElse(null);
-                } catch (IOException e) {
-                    return null;
-                }
-            }));
-
             sample.getExtensions().configure(ManifestExtension.class, manifest -> {
-                manifest.put("title", sample.getTitle());
                 manifest.put("variants", project.provider(() -> Arrays.asList(project.getTasks().named("zip" + sample.getName(), Zip.class).get().getArchiveFileName().get())));
             });
         });
-        //endregion
 
         // TODO: OG meta
         // TODO: HTML meta
