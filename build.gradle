@@ -11,7 +11,7 @@ import javax.inject.Inject
 // This root project is simply a container of sample builds
 plugins {
     id 'org.gradle.samples.wrapper'
-    id 'org.gradle.samples.idea'
+    id 'dev.nokee.samples.idea'
     id 'net.nokeedev.jbake-site'
 }
 

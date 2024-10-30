@@ -7,7 +7,7 @@ plugins {
     id "idea"
     id "org.gradle.samples.generators"
     id 'maven-publish'
-    id 'org.gradle.samples.idea'
+    id 'dev.nokee.samples.idea'
     id 'dev.nokee.samples.copy-source'
 }
 

@@ -1,4 +1,4 @@
-package org.gradle.samples.plugins;
+package org.gradle.samples.plugins.generators.idea;
 
 import com.google.common.base.CaseFormat;
 import dev.nokee.samples.externalbuilds.ExternalBuildTask;
