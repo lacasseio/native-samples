@@ -1,12 +1,15 @@
-package org.gradle.samples.plugins.generators;
+package org.gradle.samples.plugins.generators.copysource;
 
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.samples.plugins.generators.SamplesExtension;
+import org.gradle.samples.plugins.generators.SamplesManifestTask;
+import org.gradle.samples.plugins.generators.SyncExternalRepoTask;
+import org.gradle.samples.plugins.generators.UpdateRepoTask;
 
 import javax.inject.Inject;
 import java.util.stream.Collectors;

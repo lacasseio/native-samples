@@ -1,4 +1,4 @@
-package org.gradle.samples.plugins.generators;
+package org.gradle.samples.plugins.generators.copysource;
 
 public class Template {
     private final String templateName;

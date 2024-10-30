@@ -1,4 +1,4 @@
-package org.gradle.samples.plugins.generators;
+package org.gradle.samples.plugins.generators.copysource;
 
 public class CppLibraryTemplate extends Template {
     private final String name;

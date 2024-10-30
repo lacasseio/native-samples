@@ -1,4 +1,4 @@
-package org.gradle.samples.plugins.generators;
+package org.gradle.samples.plugins.generators.copysource;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.groovy.runtime.StringGroovyMethods;

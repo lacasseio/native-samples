@@ -17,7 +17,7 @@ gradlePlugin {
 
         copySource {
             id = 'dev.nokee.samples.copy-source'
-            implementationClass = 'org.gradle.samples.plugins.generators.CopySourcePlugin'
+            implementationClass = 'org.gradle.samples.plugins.generators.copysource.CopySourcePlugin'
         }
 
         idea {
