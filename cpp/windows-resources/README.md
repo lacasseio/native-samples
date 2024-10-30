@@ -1,4 +1,4 @@
-# Application with Windows Resources (windows-resources)
+# Application with Windows Resources
 
 This sample shows how Gradle is able to compile Windows Resources (`rc`) files and link them into a native binary.
 This sample applies the `'cpp-application'` plugin.

@@ -1,4 +1,4 @@
-# Targetting multiple machines (multiple-target-machines)
+# Targetting multiple machines
 
 This sample shows how a simple C++ application can target multiple machines with Gradle.
 The application has no dependencies and the build has minimal configuration.

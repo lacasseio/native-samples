@@ -1,4 +1,4 @@
-# Header-only libraries (header-only-library)
+# Header-only libraries
 
 This sample demonstrates header-only libraries.
 

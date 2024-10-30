@@ -1,4 +1,4 @@
-# Libraries build with autotools (autotools-library)
+# Libraries build with autotools
 
 This sample demonstrates using Gradle's dependency management features to coordinate building libraries built by Autotools (i.e. `configure` and `make`).
 The sample is composed of an application and a curl library.

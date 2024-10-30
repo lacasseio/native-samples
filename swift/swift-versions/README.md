@@ -1,4 +1,4 @@
-# Supporting multiple Swift versions (swift-versions)
+# Supporting multiple Swift versions
 
 This sample demonstrates using multiple versions of Swift in a single build. There are two projects that build identical applications. One is written in Swift 3 compatible code (`swift3-app`) and one is written with Swift 4 compatible code (`swift4-app`). When running the application, it will print a message about which version of Swift was used.
 
@@ -11,7 +11,7 @@ If you have the Swift 4 compiler installed, you can build both applications:
 > cd swift/swift-versions
 > ./gradlew assemble
 
-BUILD SUCCESSFUL in 1s
+BUILD SUCCESSFUL
 
 > ./swift4-app/build/install/main/debug/App
 Built for Swift 4

@@ -1,4 +1,4 @@
-# Application with static library dependencies (static-library)
+# Application with static library dependencies
 
 This sample demonstrates building and using static libraries.
 

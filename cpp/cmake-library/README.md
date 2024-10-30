@@ -1,4 +1,4 @@
-# Application uses a library built by CMake (cmake-library)
+# Application uses a library built by CMake
 
 This sample demonstrates integrating a library that is built by CMake into a Gradle build.
 The sample is structured as a multi-project build.

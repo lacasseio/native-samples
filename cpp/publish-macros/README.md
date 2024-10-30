@@ -1,4 +1,4 @@
-# Publishing macros for transitive consumption by downstream projects (publish-macros)
+# Publishing macros for transitive consumption by downstream projects
 
 This sample demonstrates how to publish macros to downstream projects.
 

@@ -1,4 +1,4 @@
-# Swift application with C++ library dependencies (cpp-dependencies)
+# Swift application with C++ library dependencies
 
 This sample demonstrates using a C++ library from Swift.
 

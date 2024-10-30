@@ -1,4 +1,4 @@
-# Application with operating system specific library dependencies (operating-system-specific-dependencies)
+# Application with operating system specific library dependencies
 
 This sample demonstrates an application that has dependencies on different libraries for each operating system.
 Currently, there are no conveniences for using libraries that are installed on the build machine.

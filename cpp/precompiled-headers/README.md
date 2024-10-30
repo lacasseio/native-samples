@@ -1,4 +1,4 @@
-# Application with precompiled headers (precompiled-headers)
+# Application with precompiled headers
 
 This sample shows how Gradle is able to compile code using precompiled headers.
 This sample applies the `'cpp-application'` plugin.

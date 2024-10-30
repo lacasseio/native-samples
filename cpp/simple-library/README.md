@@ -1,4 +1,4 @@
-# Simple Library (simple-library)
+# Simple Library
 
 This sample shows how a C++ library can be built with Gradle.
 The library has no dependencies.

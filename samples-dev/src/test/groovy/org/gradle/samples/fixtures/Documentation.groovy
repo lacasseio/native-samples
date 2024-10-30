@@ -3,16 +3,14 @@ package org.gradle.samples.fixtures
 import org.commonmark.node.*
 import org.commonmark.parser.Parser
 
-import java.util.regex.Pattern
-
 /**
  * Locates the documentation for a sample in the README.md
  *
  * The documentation for a sample should be formatted as:
  *
- * - A level 2 heading with '(<sample-name>)' at the end of the heading text
- * - Includes all content up to the next level 2 heading.
- * - Must contain a level 3 `C++` and/or `Swift` and/or `C` heading for each language.
+ * - (single-readme) A level 2 heading with '(<sample-name>)' at the end of the heading text
+ * - (single-readme) Includes all content up to the next level 2 heading.
+ * - (single-readme) Must contain a level 3 `C++` and/or `Swift` and/or `C` heading for each language.
  * - Must contain at least one fenced code block containing the instructions for the sample for each language.
  * - All lines in the instructions that start with '>' are considered user input
  * - Instructions should include a `> cd <sample-dir>` command, this directory is assumed to be the working directory for subsequent commands.
@@ -41,11 +39,11 @@ class Documentation {
         def root = parser.parse(readme.text)
         def visitor = new HeadingVisitor()
         root.accept(visitor)
-        return visitor.sample
+        return new SampleDocumentation(readme.name, visitor.heading)
     }
 
     private static class HeadingVisitor extends AbstractVisitor {
-        private SampleDocumentation sample = null;
+        private Heading heading = null;
 
         @Override
         void visit(Heading heading) {
@@ -53,12 +51,7 @@ class Documentation {
                 return
             }
             String text = getText(heading)
-            def matcher = Pattern.compile(".+\\s+\\((.+)\\)\\s*").matcher(text)
-            if (!matcher.matches()) {
-                return
-            }
-            def name = matcher.group(1)
-            sample = new SampleDocumentation(name, heading)
+            this.heading = heading
         }
 
         private String getText(Heading heading) {

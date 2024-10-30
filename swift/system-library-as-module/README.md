@@ -1,4 +1,4 @@
-# Using a module for a system library with Swift (system-library-as-module)
+# Using a module for a system library with Swift
 
 Existing system libraries can be wrapped in user defined `module.modulemap` files.
 

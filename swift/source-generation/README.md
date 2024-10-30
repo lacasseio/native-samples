@@ -1,4 +1,4 @@
-# Source generation (source-generation)
+# Source generation
 
 This sample demonstrates using a task to generate source code before building a Swift application.
 

@@ -1,4 +1,4 @@
-# Application with library dependencies in a single build (transitive-dependencies)
+# Application with library dependencies in a single build
 
 This sample shows how a Swift application and several libraries can be built with Gradle and linked together.
 The sample is structured as a multi-project build, with the application and each library as separate projects in this build. Dependencies are added using project dependencies.
@@ -12,7 +12,7 @@ To build and run the application:
 > cd swift/transitive-dependencies
 > ./gradlew assemble
 
-BUILD SUCCESSFUL in 1s
+BUILD SUCCESSFUL
 
 > ./app/build/install/main/debug/App
 Hello, World!
