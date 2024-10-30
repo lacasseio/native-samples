@@ -37,7 +37,7 @@ public class GeneratorPlugin implements Plugin<Project> {
         TaskCollection<GitRepoTask> repoTasks = project.getTasks().withType(GitRepoTask.class);
 
         // Add project extension
-        SamplesExtension extension = project.getExtensions().create("samples", SamplesExtension.class, project);
+        SamplesExtension extension = project.getExtensions().create("samples", SamplesExtension.class);
 
         extension.getSamples().all(sample -> {
             TaskProvider<Sync> contentTask = project.getTasks().register("sync" + sample.getName() + "Sample", Sync.class);
