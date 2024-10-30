@@ -2,11 +2,14 @@ rootProject.name = 'plugins'
 
 include 'external-build'
 
-gradle.allprojects {
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.PREFER_SETTINGS
     repositories {
         mavenCentral()
     }
+}
 
+gradle.allprojects {
     pluginManager.withPlugin('java-base') {
         java {
             sourceCompatibility = JavaVersion.VERSION_1_8
