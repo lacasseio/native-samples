@@ -23,6 +23,10 @@ gradlePlugin {
             id = 'dev.nokee.samples.readme'
             implementationClass = 'org.gradle.samples.plugins.generators.readme.ReadMePlugin'
         }
+        manifest {
+            id = 'dev.nokee.samples.manifest'
+            implementationClass = 'org.gradle.samples.plugins.generators.manifest.ManifestPlugin'
+        }
 
         idea {
             id = 'org.gradle.samples.idea'

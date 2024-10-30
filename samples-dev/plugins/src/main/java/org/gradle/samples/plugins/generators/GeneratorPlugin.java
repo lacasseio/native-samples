@@ -1,8 +1,6 @@
 package org.gradle.samples.plugins.generators;
 
-import groovy.json.JsonBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.NamedDomainObjectFactory;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
@@ -14,22 +12,17 @@ import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.component.SoftwareComponentFactory;
-import org.gradle.api.file.RegularFileProperty;
-import org.gradle.api.provider.MapProperty;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.Sync;
-import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.component.external.model.ProjectDerivedCapability;
+import org.gradle.samples.plugins.generators.manifest.ManifestExtension;
 import org.gradle.samples.plugins.generators.readme.ReadMeExtension;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -47,7 +40,7 @@ public class GeneratorPlugin implements Plugin<Project> {
 
         // Add project extension
         SamplesExtension extension = project.getExtensions().create("samples", SamplesExtension.class, project, (NamedDomainObjectFactory<Sample>) name -> {
-            return project.getObjects().newInstance(Sample.class, name, project.getTasks().register(name + "Manifest", WriteSampleManifestTask.class), project.getTasks().register("sync" + name + "Sample", Sync.class));
+            return project.getObjects().newInstance(Sample.class, name , project.getTasks().register("sync" + name + "Sample", Sync.class));
         });
 
         // Add a task to generate the list of samples
@@ -80,6 +73,7 @@ public class GeneratorPlugin implements Plugin<Project> {
         });
 
         project.getPluginManager().apply("dev.nokee.samples.readme");
+        project.getPluginManager().apply("dev.nokee.samples.manifest");
 
         //region Summary/Manifest
         // TODO: This should be modeled as summary which adds to the manifest (this is a different capability)
@@ -98,15 +92,10 @@ public class GeneratorPlugin implements Plugin<Project> {
                 }
             }));
 
-            sample.getManifestTask().configure(t -> {
-                WriteSampleManifestTask task = (WriteSampleManifestTask) t;
-                task.getElements().put("title", sample.getTitle());
-                task.getElements().put("name", sample.getName());
-                task.getElements().put("variants", project.provider(() -> Arrays.asList(project.getTasks().named("zip" + sample.getName(), Zip.class).get().getArchiveFileName().get())));
-                task.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "manifest.json")));
+            sample.getExtensions().configure(ManifestExtension.class, manifest -> {
+                manifest.put("title", sample.getTitle());
+                manifest.put("variants", project.provider(() -> Arrays.asList(project.getTasks().named("zip" + sample.getName(), Zip.class).get().getArchiveFileName().get())));
             });
-
-            sample.content(spec -> spec.from(sample.getManifestTask()));
         });
         //endregion
 
@@ -222,23 +211,5 @@ public class GeneratorPlugin implements Plugin<Project> {
         generateSource.configure(task -> {
             task.dependsOn(updateTask);
         });
-    }
-
-    /*private*/ static abstract /*final*/ class WriteSampleManifestTask extends DefaultTask {
-        @Inject
-        public WriteSampleManifestTask() {}
-
-        @Input
-        public abstract MapProperty<String, Object> getElements();
-
-        @OutputFile
-        public abstract RegularFileProperty getOutputFile();
-
-        @TaskAction
-        private void doWrite() throws IOException {
-            try (PrintWriter out = new PrintWriter(getOutputFile().get().getAsFile())) {
-                new JsonBuilder(getElements().get()).writeTo(out);
-            }
-        }
     }
 }
