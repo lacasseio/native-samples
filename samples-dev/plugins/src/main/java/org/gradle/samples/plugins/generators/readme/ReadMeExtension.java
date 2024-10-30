@@ -1,4 +1,4 @@
-package org.gradle.samples.plugins.generators;
+package org.gradle.samples.plugins.generators.readme;
 
 import org.gradle.api.file.RegularFileProperty;
 

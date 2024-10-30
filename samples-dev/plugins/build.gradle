@@ -19,6 +19,10 @@ gradlePlugin {
             id = 'dev.nokee.samples.copy-source'
             implementationClass = 'org.gradle.samples.plugins.generators.copysource.CopySourcePlugin'
         }
+        readme {
+            id = 'dev.nokee.samples.readme'
+            implementationClass = 'org.gradle.samples.plugins.generators.readme.ReadMePlugin'
+        }
 
         idea {
             id = 'org.gradle.samples.idea'
