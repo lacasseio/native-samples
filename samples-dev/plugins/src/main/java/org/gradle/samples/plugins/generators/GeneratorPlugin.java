@@ -12,18 +12,16 @@ import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.component.SoftwareComponentFactory;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskCollection;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.component.external.model.ProjectDerivedCapability;
 import org.gradle.samples.plugins.generators.manifest.ManifestExtension;
-import org.gradle.samples.plugins.generators.readme.ReadMeExtension;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -39,8 +37,14 @@ public class GeneratorPlugin implements Plugin<Project> {
         TaskCollection<GitRepoTask> repoTasks = project.getTasks().withType(GitRepoTask.class);
 
         // Add project extension
-        SamplesExtension extension = project.getExtensions().create("samples", SamplesExtension.class, project, (NamedDomainObjectFactory<Sample>) name -> {
-            return project.getObjects().newInstance(Sample.class, name , project.getTasks().register("sync" + name + "Sample", Sync.class));
+        SamplesExtension extension = project.getExtensions().create("samples", SamplesExtension.class, project);
+
+        extension.getSamples().all(sample -> {
+            TaskProvider<Sync> contentTask = project.getTasks().register("sync" + sample.getName() + "Sample", Sync.class);
+            contentTask.configure(task -> {
+                task.setDestinationDir(project.file(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "out"))));
+            });
+            sample.getExtensions().add(CopySpec.class, "content", contentTask.get());
         });
 
         // Add a task to generate the list of samples
@@ -124,17 +128,13 @@ public class GeneratorPlugin implements Plugin<Project> {
             });
 
             //region Export sample content
-            sample.content(spec -> {
+            sample.getExtensions().configure(CopySpec.class, spec -> {
                 spec.from(zipTask);
-            });
-
-            sample.getContentTask().configure(task -> {
-                task.setDestinationDir(project.file(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "out"))));
             });
 
             TaskProvider<Zip> zipSampleTask = project.getTasks().register("zip" + sample.getName() + "Sample", Zip.class);
             zipSampleTask.configure(task -> {
-                task.from(sample.getContentTask());
+                task.from(project.getTasks().named("sync" + sample.getName() + "Sample"));
                 task.getArchiveBaseName().set(sample.getName());
                 task.getArchiveVersion().set(project.getVersion().toString());
                 task.getArchiveExtension().set("sample");
@@ -149,7 +149,7 @@ public class GeneratorPlugin implements Plugin<Project> {
                     outgoing.artifact(zipSampleTask);
                     outgoing.variants(variants -> {
                         variants.create("sample-directory", it -> {
-                            it.artifact(sample.getContentTask(), spec -> spec.setType("sample-directory"));
+                            it.artifact(project.getTasks().named("sync" + sample.getName() + "Sample"), spec -> spec.setType("sample-directory"));
                         });
                     });
                 });

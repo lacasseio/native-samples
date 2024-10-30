@@ -2,6 +2,7 @@ package org.gradle.samples.plugins.generators.readme;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
@@ -48,7 +49,7 @@ import java.io.File;
                 }
             });
 
-            sample.content(spec -> spec.from(readme.getLocation()));
+            sample.getExtensions().configure(CopySpec.class, spec -> spec.from(readme.getLocation()));
         });
     }
 

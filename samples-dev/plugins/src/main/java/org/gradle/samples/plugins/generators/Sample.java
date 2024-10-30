@@ -2,7 +2,6 @@ package org.gradle.samples.plugins.generators;
 
 import org.gradle.api.Action;
 import org.gradle.api.Named;
-import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.tasks.Sync;
@@ -15,13 +14,11 @@ import java.util.List;
 
 public abstract class Sample implements Named, ExtensionAware {
     private final String name;
-    private final TaskProvider<Sync> contentTask;
     private final List<Action<Zip>> zipActions = new ArrayList<Action<Zip>>();
 
     @Inject
-    public Sample(String name, TaskProvider<Sync> contentTask) {
+    public Sample(String name) {
         this.name = name;
-        this.contentTask = contentTask;
     }
 
     @Override
@@ -30,14 +27,6 @@ public abstract class Sample implements Named, ExtensionAware {
     }
 
     public abstract DirectoryProperty getSampleDir();
-
-    public void content(Action<? super CopySpec> action) {
-        contentTask.configure(action);
-    }
-
-    public TaskProvider<Sync> getContentTask() {
-        return contentTask;
-    }
 
     public void zipSource(Action<Zip> action) {
         zipActions.add(action);

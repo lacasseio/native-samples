@@ -4,6 +4,7 @@ import groovy.json.JsonBuilder;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.tasks.Input;
@@ -34,7 +35,7 @@ import java.io.PrintWriter;
                 task.getOutputFile().fileProvider(project.provider(task.getTemporaryDirFactory()::create).map(it -> new File(it, "manifest.json")));
             });
 
-            sample.content(spec -> spec.from(manifestTask.flatMap(WriteSampleManifestTask::getOutputFile)));
+            sample.getExtensions().configure(CopySpec.class, spec -> spec.from(manifestTask.flatMap(WriteSampleManifestTask::getOutputFile)));
         });
     }
 
